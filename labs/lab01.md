@@ -563,50 +563,50 @@ func main() {
 ### Main Tasks (10 points)
 
 **Application Functionality (3 pts):**
-- [ ] Service runs without errors
-- [ ] `GET /` returns all required fields:
-  - [ ] Service metadata (name, version, description, framework)
-  - [ ] System info (hostname, platform, architecture, CPU, Python version)
-  - [ ] Runtime info (uptime, current time, timezone)
-  - [ ] Request info (client IP, user agent, method, path)
-  - [ ] Endpoints list
-- [ ] `GET /health` returns status and uptime
-- [ ] Configurable via environment variables (PORT, HOST)
+- [x] Service runs without errors
+- [x] `GET /` returns all required fields:
+  - [x] Service metadata (name, version, description, framework)
+  - [x] System info (hostname, platform, architecture, CPU, Python version)
+  - [x] Runtime info (uptime, current time, timezone)
+  - [x] Request info (client IP, user agent, method, path)
+  - [x] Endpoints list
+- [x] `GET /health` returns status and uptime
+- [x] Configurable via environment variables (PORT, HOST)
 
 **Code Quality (2 pts):**
-- [ ] Clean code structure
-- [ ] PEP 8 compliant
-- [ ] Error handling implemented
-- [ ] Logging configured
+- [x] Clean code structure
+- [x] PEP 8 compliant
+- [x] Error handling implemented
+- [x] Logging configured
 
 **Documentation (3 pts):**
-- [ ] `app_python/README.md` complete with all sections
-- [ ] `app_python/docs/LAB01.md` includes:
-  - [ ] Framework justification
-  - [ ] Best practices documentation
-  - [ ] API examples
-  - [ ] Testing evidence
-  - [ ] Challenges solved
-  - [ ] GitHub Community section (why stars/follows matter)
-- [ ] All 3 required screenshots present
-- [ ] Course repository starred
-- [ ] simple-container-com/api repository starred
-- [ ] Professor and TAs followed on GitHub
-- [ ] At least 3 classmates followed on GitHub
+- [x] `app_python/README.md` complete with all sections
+- [x] `app_python/docs/LAB01.md` includes:
+  - [x] Framework justification
+  - [x] Best practices documentation
+  - [x] API examples
+  - [x] Testing evidence
+  - [x] Challenges solved
+  - [x] GitHub Community section (why stars/follows matter)
+- [x] All 3 required screenshots present
+- [x] Course repository starred
+- [x] simple-container-com/api repository starred
+- [x] Professor and TAs followed on GitHub
+- [x] At least 3 classmates followed on GitHub
 
 **Configuration (2 pts):**
-- [ ] `requirements.txt` with pinned versions
-- [ ] `.gitignore` properly configured
-- [ ] Environment variables working
+- [x] `requirements.txt` with pinned versions
+- [x] `.gitignore` properly configured
+- [x] Environment variables working
 
 ### Bonus Task (2.5 points)
 
-- [ ] Compiled language app implements both endpoints
-- [ ] Same JSON structure as Python version
-- [ ] `app_<language>/README.md` with build/run instructions
-- [ ] `app_<language>/docs/GO.md` with language justification
-- [ ] `app_<language>/docs/LAB01.md` with implementation details
-- [ ] Screenshots showing compilation and execution
+- [x] Compiled language app implements both endpoints
+- [x] Same JSON structure as Python version
+- [x] `app_<language>/README.md` with build/run instructions
+- [x] `app_<language>/docs/GO.md` with language justification
+- [x] `app_<language>/docs/LAB01.md` with implementation details
+- [x] Screenshots showing compilation and execution
 
 ---
 
