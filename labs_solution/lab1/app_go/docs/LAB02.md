@@ -7,7 +7,7 @@
 ## Docker
 - Docker Hub repo URL & see screenshot of push in app_go/docs/screenshots/go_docker_push_tag.png & see tag name:
 ```
-https://hub.docker.com/repository/docker/iliadocker21/devops-info-go/general
+https://hub.docker.com/r/iliadocker21/devops-info-go
 ```
 
 ## Multi-Stage Build Strategy (What & Why)

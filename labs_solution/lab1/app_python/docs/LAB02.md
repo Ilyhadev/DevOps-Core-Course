@@ -8,7 +8,7 @@
 ## Docker
 - Docker Hub repo URL & see screenshot of push in app_python/docs/screenshots/python_docker_push.png & see tag name (updated in screenshot last_docker_tag_used.png):
 ```
-https://hub.docker.com/repository/docker/iliadocker21/devops-info-python/general
+https://hub.docker.com/r/iliadocker21/devops-info-python
 ```
 
 ## Docker Best Practices Applied
