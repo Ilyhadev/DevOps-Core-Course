@@ -34,6 +34,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+        continue-on-error: true
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -69,9 +70,7 @@ jobs:
 
       - name: Generate version (CalVer)
         id: version
-        run: |
-          VERSION=$(date +"%Y.%m.%d")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        run: echo "version=$(date +%Y.%m.%d)" >> $GITHUB_OUTPUT
 
       - name: Build and push Go image
         uses: docker/build-push-action@v4
@@ -80,5 +79,5 @@ jobs:
           file: labs_solution/lab1/app_go/Dockerfile
           push: true
           tags: |
-            ${{ env.DOCKERHUB_USERNAME }}/devops-info-go:${{ env.VERSION }}
-            ${{ env.DOCKERHUB_USERNAME }}/devops-info-go:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-go:${{ steps.version.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-go:latest

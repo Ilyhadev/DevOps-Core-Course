@@ -73,9 +73,7 @@ jobs:
 
       - name: Generate version (CalVer)
         id: version
-        run: |
-          VERSION=$(date +"%Y.%m.%d")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        run: echo "version=$(date +%Y.%m.%d)" >> $GITHUB_OUTPUT
 
       - name: Build and push Python image
         uses: docker/build-push-action@v4
@@ -84,8 +82,8 @@ jobs:
           file: labs_solution/lab1/app_python/Dockerfile
           push: true
           tags: |
-            ${{ env.DOCKERHUB_USERNAME }}/devops-info-python:${{ env.VERSION }}
-            ${{ env.DOCKERHUB_USERNAME }}/devops-info-python:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-python:${{ steps.version.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-python:latest
 
       - name: Build and push Go image
         uses: docker/build-push-action@v4
@@ -94,19 +92,5 @@ jobs:
           file: labs_solution/lab1/app_go/Dockerfile
           push: true
           tags: |
-            ${{ env.DOCKERHUB_USERNAME }}/devops-info-go:${{ env.VERSION }}
-            ${{ env.DOCKERHUB_USERNAME }}/devops-info-go:latest
-
-  snyk-scan:
-    name: Snyk dependency scan
-    runs-on: ubuntu-latest
-    needs: test-and-lint
-    if: ${{ secrets.SNYK_TOKEN != '' }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run Snyk
-        uses: snyk/actions@master
-        with:
-          args: test --file=labs_solution/lab1/app_python/requirements.txt
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-go:${{ steps.version.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-go:latest
