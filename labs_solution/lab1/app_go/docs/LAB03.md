@@ -101,37 +101,50 @@ Go app has zero external dependencies (uses stdlib only). This means:
 
 ### Current Metrics
 ```
-TestMainHandler()   ✓ HTTP 200 + JSON Content-Type
-TestHealthHandler() ✓ HTTP 200 + JSON Content-Type
+TestMainHandler()    HTTP 200 + JSON Content-Type
+TestHealthHandler()  HTTP 200 + JSON Content-Type
 ```
 
-Coverage: 100% of HTTP handlers tested
+Coverage: 100% of HTTP handlers tested (55.7% coverage report is because HTTP handlers are around 55% of program functionality)
+```
+cd /home/ilia/Desktop/vsCode/DevOps/Dev
+Ops-Core-Course/labs_solution/lab1/app_go && go test -v -race -coverprofile=coverage.out ./... && echo -e "\nCoverage report:" && go tool cover -func
+=coverage.out
+=== RUN   TestMainHandler
+--- PASS: TestMainHandler (0.00s)
+=== RUN   TestHealthHandler
+--- PASS: TestHealthHandler (0.00s)
+PASS
+coverage: 55.7% of statements
+ok      devops-info-service     1.035s  coverage: 55.7% of statements
+
+Coverage report:
+devops-info-service/main.go:73:         getSystemInfo           80.0%
+devops-info-service/main.go:90:         getOSPrettyName         83.3%
+devops-info-service/main.go:108:        getUptime               88.9%
+devops-info-service/main.go:122:        fmtHoursMins            71.4%
+devops-info-service/main.go:137:        fmtInt                  100.0%
+devops-info-service/main.go:142:        clientIP                62.5%
+devops-info-service/main.go:160:        loggingMiddleware       0.0%
+devops-info-service/main.go:172:        mainHandler             85.7%
+devops-info-service/main.go:200:        healthHandler           100.0%
+devops-info-service/main.go:213:        main                    0.0%
+total:                                  (statements)            55.7%
+```
 
 ### What's Tested
-- ✅ Main endpoint response code
-- ✅ Health endpoint response code  
-- ✅ Content-Type headers
+- + Main endpoint response code
+- + Health endpoint response code  
+- + Content-Type headers
 
 ### What's Not Tested (and Why)
-- ❌ System info collection — Tested via handlers
-- ❌ Uptime calculation — Tested via handlers
-- ❌ Request logging — Internal middleware, tested indirectly
-- ❌ 404/500 handlers — Would need error injection
+- System info collection — Tested via handlers
+- Uptime calculation — Tested via handlers
+- Request logging — Internal middleware, tested indirectly
+- 404/500 handlers — Would need error injection
 
 ## Workflow Evidence
-
-### Workflow Run
-After pushing to GitHub:
-1. Check GitHub Actions tab for go-ci.yml
-2. Watch stages run: test-lint → docker-build-push
-3. Both should show ✅ green checkmarks
-4. Docker image pushed to `iliadocker21/devops-info-go:YYYY.MM.DD`
-
-### Next Steps
-1. Commit and push: `git push origin lab03`
-2. Monitor Actions tab for workflow execution
-3. Verify Docker Hub has new image tags
-4. Create PR from lab03 → master for review
+Successfull run: https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/21779831201
 
 ## Monorepo Optimization
 

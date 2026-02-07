@@ -47,6 +47,7 @@ jobs:
         run: |
           cd labs_solution/lab1/app_go
           go test -v -race -coverprofile=coverage.out ./...
+          echo "Coverage report:"
           go tool cover -func=coverage.out
 
   docker-build-push:

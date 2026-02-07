@@ -47,7 +47,9 @@ jobs:
 
       - name: Run tests with coverage (pytest)
         run: |
-          pytest -q --cov=labs_solution/lab1/app_python --cov-report=xml --cov-report=term
+          cd labs_solution/lab1/app_python
+          pytest -v --cov=. --cov-report=term --cov-report=xml
+          echo "Coverage report generated"
 
   docker-build-push:
     name: Build & Push Docker images (Python + Go)

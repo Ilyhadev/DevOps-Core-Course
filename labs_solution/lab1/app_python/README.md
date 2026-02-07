@@ -1,4 +1,4 @@
-## Lab 1, SD-02 Ilia Kliantsevich
+## Lab 1, 2, 3, SD-02 Ilia Kliantsevich
 
 ![CI status](https://github.com/Ilyhadev/DevOps-Core-Course/actions/workflows/python-ci.yml/badge.svg)
 
@@ -93,3 +93,13 @@ This section explains the command patterns to build, run and pull your container
   ```
 
 
+### How to Test Locally
+Note: see expected output and more info in docs/LAB03 
+```bash
+# Install test dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest -v
+```

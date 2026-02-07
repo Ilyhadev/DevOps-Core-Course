@@ -9,7 +9,7 @@
 ## Testing
 
 ### Framework Choice
-Chose **pytest** because:
+I choose **pytest** because:
 - Simple, readable syntax (no boilerplate)
 - Fixtures for setup/teardown
 - Easy to run locally: `pytest -v`
@@ -17,10 +17,10 @@ Chose **pytest** because:
 - Integrates into CI pipelines naturally
 
 ### Tests Written
-See `tests/test_app.py` (44 lines):
-- `test_index_structure()` — Validates `GET /` returns correct JSON structure (service, system, runtime, request, endpoints fields)
-- `test_health_endpoint()` — Validates `GET /health` returns status + timestamp
-- `test_404_returns_json()` — Validates error response is JSON on 404
+See `tests/test_app.py`:
+- `test_index_structure()` - Validates `GET /` returns correct JSON structure (service, system, runtime, request, endpoints fields)
+- `test_health_endpoint()` - Validates `GET /health` returns status + timestamp
+- `test_404_returns_json()` - Validates error response is JSON on 404
 
 ### Test Output (Real Run)
 ```bash
@@ -65,7 +65,8 @@ pytest -v
 - `iliadocker21/devops-info-python:2026.02.07` (immutable date tag)
 - `iliadocker21/devops-info-python:latest` (rolling latest)
 
-**Why CalVer?** Services deploy frequently; time-based versioning is clearer than manual SemVer bumping. Automated in CI, no manual git tagging needed.
+**Why CalVer?** Services deploy frequently; time-based versioning is clearer than manual SemVer bumping. Automated in CI, no manual git tagging needed. Besides, in context of lab assigment time-based based versioning is much more informative. 
+
 
 ## Best Practices Implemented
 
@@ -117,45 +118,54 @@ Added to README:
 
 ### Current Metrics
 ```
-test_index_structure()  ✓ Validates JSON structure, field presence, types
-test_health_endpoint()  ✓ Validates status code + timestamp response
-test_404_returns_json() ✓ Validates error handling returns JSON
+test_index_structure()   Validates JSON structure, field presence, types
+test_health_endpoint()   Validates status code + timestamp response
+test_404_returns_json()  Validates error handling returns JSON
+
+
 ```
 
-Coverage: ~85% of core functionality (endpoints + response format)
+Coverage: ~90% of core functionality (endpoints + response format)
+```
+cd /home/ilia/Desktop/vsCode/DevOps/DevOps-
+Core-Course/labs_solution/lab1/app_python && pytest -v --cov=. --cov-report=term --cov-report=xml && echo -e "\n Coverage report generated in CI fo
+rmat"
+================================================================ test session starts ================================================================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0 -- /home/ilia/Desktop/vsCode/DevOps/DevOps-Core-Course/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/ilia/Desktop/vsCode/DevOps/DevOps-Core-Course/labs_solution/lab1/app_python
+plugins: cov-7.0.0
+collected 3 items                                                                                                                                   
 
+tests/test_app.py::test_index_structure PASSED                                                                                                [ 33%]
+tests/test_app.py::test_health_endpoint PASSED                                                                                                [ 66%]
+tests/test_app.py::test_404_returns_json PASSED                                                                                               [100%]
+
+================================================================== tests coverage ===================================================================
+__________________________________________________ coverage: platform linux, python 3.12.3-final-0 __________________________________________________
+
+Name                Stmts   Miss  Cover
+---------------------------------------
+app.py                 64      8    88%
+tests/__init__.py       0      0   100%
+tests/test_app.py      34      0   100%
+---------------------------------------
+TOTAL                  98      8    92%
+Coverage XML written to file coverage.xml
+================================================================= 3 passed in 0.99s =================================================================
+
+Coverage report generated in CI format
+```
 ### What's Tested
-- ✅ All 3 endpoints (`/`, `/health`, error responses)
-- ✅ JSON structure and field types
-- ✅ HTTP response codes
+- + All 3 endpoints (`/`, `/health`, error responses)
+- + JSON structure and field types
+- + HTTP response codes
 
 ### What's Not Tested (and Why)
-- ❌ `get_system_info()` — Tested indirectly via `/` endpoint
-- ❌ `get_uptime()` — Tested indirectly via `/` response
-- ❌ Request logging — Would need logger mocking
-- ❌ 500 errors — Hard to trigger without mocking internals
+- `get_system_info()` — Tested indirectly via `/` endpoint
+- `get_uptime()` — Tested indirectly via `/` response
+- Request logging — Would need logger mocking
+- 500 errors — Hard to trigger without mocking internals
 
 ## Workflow Evidence
-
-### Workflow Run
-After pushing to GitHub:
-1. Check GitHub Actions tab for python-ci.yml
-2. Watch stages run: test-and-lint → docker-build-push
-3. Both should show ✅ green checkmarks
-4. Docker image pushed to `iliadocker21/devops-info-python:YYYY.MM.DD`
-
-### Next Steps
-1. Commit and push: `git push origin lab03`
-2. Monitor Actions tab for workflow execution
-3. Verify Docker Hub has new image tags
-4. Create PR from lab03 → master for review
-
-## Bonus: Multi-App CI
-
-See `.github/workflows/go-ci.yml` for Go app CI (parallel execution, path filters, language-specific tools).
-
-**Path Filters Benefit:** Python and Go workflows run independently on monorepo changes:
-- Change only `app_python/**` → Only Python CI runs (~2 min)
-- Change only `app_go/**` → Only Go CI runs (~1.5 min)  
-- Change both → Both run in parallel (~2 min total, not 3.5 sequential)
-
+Successfull run: https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/21779831222
