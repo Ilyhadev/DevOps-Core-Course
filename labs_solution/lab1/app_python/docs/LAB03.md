@@ -168,4 +168,4 @@ Coverage report generated in CI format
 - 500 errors — Hard to trigger without mocking internals
 
 ## Workflow Evidence
-Successfull run: https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/21779831222
+Successfull run: https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/21780187847

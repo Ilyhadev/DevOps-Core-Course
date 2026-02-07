@@ -144,7 +144,7 @@ total:                                  (statements)            55.7%
 - 404/500 handlers — Would need error injection
 
 ## Workflow Evidence
-Successfull run: https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/21779831201
+Successfull run: https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/21780187842
 
 ## Monorepo Optimization
 
