@@ -1,0 +1,112 @@
+name: CI — Python app (test, lint, build & publish)
+
+on:
+  push:
+    branches: [ main, master, lab03 ]
+    paths:
+      - 'labs_solution/lab1/app_python/**'
+      - '.github/workflows/python-ci.yml'
+  pull_request:
+    branches: [ main, master, lab03 ]
+    paths:
+      - 'labs_solution/lab1/app_python/**'
+      - '.github/workflows/python-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-lint:
+    name: Test & Lint (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f "labs_solution/lab1/app_python/requirements.txt" ]; then pip install -r labs_solution/lab1/app_python/requirements.txt; fi
+          if [ -f "labs_solution/lab1/app_python/requirements-dev.txt" ]; then pip install -r labs_solution/lab1/app_python/requirements-dev.txt; fi
+
+      - name: Lint (flake8)
+        run: |
+          flake8 labs_solution/lab1/app_python || true
+
+      - name: Run tests with coverage (pytest)
+        run: |
+          pytest -q --cov=labs_solution/lab1/app_python --cov-report=xml --cov-report=term
+
+  docker-build-push:
+    name: Build & Push Docker images (Python + Go)
+    runs-on: ubuntu-latest
+    needs: test-and-lint
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Generate version (CalVer)
+        id: version
+        run: |
+          VERSION=$(date +"%Y.%m.%d")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build and push Python image
+        uses: docker/build-push-action@v4
+        with:
+          context: labs_solution/lab1/app_python
+          file: labs_solution/lab1/app_python/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/devops-info-python:${{ env.VERSION }}
+            ${{ env.DOCKERHUB_USERNAME }}/devops-info-python:latest
+
+      - name: Build and push Go image
+        uses: docker/build-push-action@v4
+        with:
+          context: labs_solution/lab1/app_go
+          file: labs_solution/lab1/app_go/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/devops-info-go:${{ env.VERSION }}
+            ${{ env.DOCKERHUB_USERNAME }}/devops-info-go:latest
+
+  snyk-scan:
+    name: Snyk dependency scan
+    runs-on: ubuntu-latest
+    needs: test-and-lint
+    if: ${{ secrets.SNYK_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Snyk
+        uses: snyk/actions@master
+        with:
+          args: test --file=labs_solution/lab1/app_python/requirements.txt
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
