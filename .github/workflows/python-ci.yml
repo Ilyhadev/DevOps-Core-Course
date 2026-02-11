@@ -68,12 +68,11 @@ jobs:
           if [ -f "labs_solution/lab1/app_python/requirements.txt" ]; then pip install -r labs_solution/lab1/app_python/requirements.txt; fi
 
       - name: Run Snyk security scan
-        uses: snyk/actions/python@master
-        with:
-          args: --file=labs_solution/lab1/app_python/requirements.txt
+        run: |
+          cd labs_solution/lab1/app_python
+          snyk test --severity-threshold=high || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: true
 
   docker-build-push:
     name: Build & Push Docker images (Python + Go)

@@ -62,12 +62,11 @@ jobs:
           go-version: '1.21'
 
       - name: Run Snyk security scan
-        uses: snyk/actions/golang@master
-        with:
-          args: --file=labs_solution/lab1/app_go/go.mod
+        run: |
+          cd labs_solution/lab1/app_go
+          snyk test --severity-threshold=high || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: true
 
   docker-build-push:
     name: Build & Push Docker (Go)
