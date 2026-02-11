@@ -63,6 +63,8 @@ jobs:
 
       - name: Run Snyk security scan
         uses: snyk/actions/golang@master
+        with:
+          args: --file=labs_solution/lab1/app_go/go.mod
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
