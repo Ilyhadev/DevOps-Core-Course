@@ -1,0 +1,124 @@
+name: CI — Python app (test, lint, build & publish)
+
+on:
+  push:
+    branches: [ main, master, lab03 ]
+    paths:
+      - 'labs_solution/lab1/app_python/**'
+      - '.github/workflows/python-ci.yml'
+  pull_request:
+    branches: [ main, master, lab03 ]
+    paths:
+      - 'labs_solution/lab1/app_python/**'
+      - '.github/workflows/python-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-lint:
+    name: Test & Lint (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f "labs_solution/lab1/app_python/requirements.txt" ]; then pip install -r labs_solution/lab1/app_python/requirements.txt; fi
+          if [ -f "labs_solution/lab1/app_python/requirements-dev.txt" ]; then pip install -r labs_solution/lab1/app_python/requirements-dev.txt; fi
+
+      - name: Lint (flake8)
+        run: |
+          flake8 labs_solution/lab1/app_python || true
+
+      - name: Run tests with coverage (pytest)
+        run: |
+          cd labs_solution/lab1/app_python
+          pytest -v --cov=. --cov-report=term --cov-report=xml
+          echo "Coverage report generated"
+
+  security-scan:
+    name: Security Scan (Snyk)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f "labs_solution/lab1/app_python/requirements.txt" ]; then pip install -r labs_solution/lab1/app_python/requirements.txt; fi
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Run Snyk security scan
+        run: |
+          cd labs_solution/lab1/app_python
+          snyk test --severity-threshold=high || true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  docker-build-push:
+    name: Build & Push Docker images (Python + Go)
+    runs-on: ubuntu-latest
+    needs: test-and-lint
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Generate version (CalVer)
+        id: version
+        run: echo "version=$(date +%Y.%m.%d)" >> $GITHUB_OUTPUT
+
+      - name: Build and push Python image
+        uses: docker/build-push-action@v4
+        with:
+          context: labs_solution/lab1/app_python
+          file: labs_solution/lab1/app_python/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-python:${{ steps.version.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-python:latest
+
+      - name: Build and push Go image
+        uses: docker/build-push-action@v4
+        with:
+          context: labs_solution/lab1/app_go
+          file: labs_solution/lab1/app_go/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-go:${{ steps.version.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-info-go:latest
