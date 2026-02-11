@@ -67,6 +67,9 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f "labs_solution/lab1/app_python/requirements.txt" ]; then pip install -r labs_solution/lab1/app_python/requirements.txt; fi
 
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
       - name: Run Snyk security scan
         run: |
           cd labs_solution/lab1/app_python
