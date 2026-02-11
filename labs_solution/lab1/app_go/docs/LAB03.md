@@ -2,7 +2,7 @@
 
 ## Summary
 - Testing: Go's built-in testing package with 2 unit tests
-- CI/CD: GitHub Actions workflow with lint, test, Docker build/push
+- CI/CD: GitHub Actions workflow with lint, test, security scan, Docker build/push
 - Versioning: CalVer (YYYY.MM.DD) matching Python app
 - Path filters: Only run when app_go/** changes (monorepo optimization)
 
@@ -74,7 +74,26 @@ Catches data race bugs. If tests pass with `-race`, concurrency is safe.
 ```
 Checks formatting, shadowing, unused variables, etc. Enforces consistent Go style.
 
-### 3. Dependency Caching
+### 3. Security Scanning (Snyk)
+```yaml
+security-scan:
+  name: Security Scan (Snyk)
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    - name: Run Snyk security scan
+      uses: snyk/actions/golang@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      continue-on-error: true
+```
+Separate job that scans Go dependencies for CVEs. Uses `snyk/actions/golang` (language-specific). Runs in parallel with testing. Since this app has **zero external dependencies**, Snyk finds nothing to scan — but it's good practice to have the job in place if dependencies are added in the future.
+
+### 4. Dependency Caching
 ```yaml
 - name: Cache Go modules
   uses: actions/cache@v4

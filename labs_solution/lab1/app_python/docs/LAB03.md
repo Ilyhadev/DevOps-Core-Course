@@ -100,13 +100,26 @@ docker-build-push:
 
 ### 4. Security Scanning (Snyk)
 ```yaml
-- name: Run Snyk security scan
-  if: ${{ secrets.SNYK_TOKEN != '' }}
-  uses: snyk/actions@master
-  with:
-    args: test --file=labs_solution/lab1/app_python/requirements.txt
+security-scan:
+  name: Security Scan (Snyk)
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install -r labs_solution/lab1/app_python/requirements.txt
+    - name: Run Snyk security scan
+      uses: snyk/actions/python@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      continue-on-error: true
 ```
-Checks for CVEs in Flask dependencies. Currently clean (Flask 3.1.0 has no critical vulnerabilities).
+**Separate job** that scans `requirements.txt` for CVEs in dependencies. Uses `snyk/actions/python` (language-specific action). Runs in parallel with tests. Set to `continue-on-error: true` so build doesn't break on vulnerability findings (allows documenting findings before fixing).
+
+**Setup required:** Add `SNYK_TOKEN` secret via GitHub repo settings (free tier at snyk.io).
 
 ### 5. Status Badge
 Added to README:
