@@ -1,0 +1,48 @@
+# Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Pulumi
+.pulumi/
+Pulumi.*.yaml
+Pulumi.*.yaml.bak
+*.pulumi.yaml
+
+# Credentials and secrets
+*.pem
+*.key
+*.json
+.env
+.env.local
+credentials
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
