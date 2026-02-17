@@ -1,11 +1,3 @@
-/*
-  Terraform template for Lab 04 (Yandex Cloud example).
-  Replace variable values in terraform.tfvars (or via CLI/environment).
-  This is a minimal example showing network, subnet, security group, and one compute instance.
-
-  IMPORTANT: Do NOT commit terraform.tfvars or any credential files.
-*/
-
 terraform {
   required_providers {
     yandex = {

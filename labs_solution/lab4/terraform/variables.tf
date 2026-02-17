@@ -34,9 +34,9 @@ variable "core_fraction" {
 }
 
 variable "memory" {
-  description = "Memory in MB"
+  description = "Memory in GB"
   type        = number
-  default     = 1024
+  default     = 2
 }
 
 variable "boot_disk_size" {
