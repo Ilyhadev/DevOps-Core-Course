@@ -157,7 +157,7 @@ role_name/
 </details>
 
 #### 1.3 Configure Inventory
-
+#### NOTE: hosts.ini has placeholder of localhost not to expose public IP used in this lab 
 Create `inventory/hosts.ini` with your VM details:
 
 ```ini

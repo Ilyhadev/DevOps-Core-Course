@@ -262,41 +262,41 @@ Document your implementation with these sections:
 ### Main Tasks (10 points)
 
 **Dockerfile (4 pts):**
-- [ ] Dockerfile exists in `app_python/`
-- [ ] Uses specific base image version
-- [ ] Runs as non-root user (USER directive)
-- [ ] Proper layer ordering (dependencies before code)
-- [ ] Only copies necessary files
-- [ ] `.dockerignore` file present
-- [ ] Image builds successfully
-- [ ] Container runs and app works
+- [x] Dockerfile exists in `app_python/`
+- [x] Uses specific base image version
+- [x] Runs as non-root user (USER directive)
+- [x] Proper layer ordering (dependencies before code)
+- [x] Only copies necessary files
+- [x] `.dockerignore` file present
+- [x] Image builds successfully
+- [x] Container runs and app works
 
 **Docker Hub (2 pts):**
-- [ ] Image pushed to Docker Hub
-- [ ] Image is publicly accessible
-- [ ] Correct tagging used
-- [ ] Can pull and run from Docker Hub
+- [x] Image pushed to Docker Hub
+- [x] Image is publicly accessible
+- [x] Correct tagging used
+- [x] Can pull and run from Docker Hub
 
 **Documentation (4 pts):**
-- [ ] `app_python/README.md` has Docker section with command patterns
-- [ ] `app_python/docs/LAB02.md` complete with:
-  - [ ] Best practices explained with WHY (not just what)
-  - [ ] Image information and justifications for choices
-  - [ ] Terminal output from build, run, and testing
-  - [ ] Technical analysis demonstrating understanding
-  - [ ] Challenges and solutions documented
-  - [ ] Docker Hub repository URL provided
+- [x] `app_python/README.md` has Docker section with command patterns
+- [x] `app_python/docs/LAB02.md` complete with:
+  - [x] Best practices explained with WHY (not just what)
+  - [x] Image information and justifications for choices
+  - [x] Terminal output from build, run, and testing
+  - [x] Technical analysis demonstrating understanding
+  - [x] Challenges and solutions documented
+  - [x] Docker Hub repository URL provided
 
 ### Bonus Task (2.5 points)
 
-- [ ] Multi-stage Dockerfile for compiled language app
-- [ ] Working containerized application
-- [ ] Documentation in `app_<language>/docs/LAB02.md` with:
-  - [ ] Multi-stage strategy explained
-  - [ ] Terminal output showing image sizes (builder vs final)
-  - [ ] Analysis of size reduction and why it matters
-  - [ ] Technical explanation of each stage
-  - [ ] Security benefits discussed
+- [x] Multi-stage Dockerfile for compiled language app
+- [x] Working containerized application
+- [x] Documentation in `app_<language>/docs/LAB02.md` with:
+  - [x] Multi-stage strategy explained
+  - [x] Terminal output showing image sizes (builder vs final)
+  - [x] Analysis of size reduction and why it matters
+  - [x] Technical explanation of each stage
+  - [x] Security benefits discussed
 
 ---
 

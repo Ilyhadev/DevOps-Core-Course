@@ -1,0 +1,13 @@
+# Go build artifacts
+bin/
+*.exe
+*.test
+*.out
+*.log
+
+# editor / OS
+.DS_Store
+.vscode
+
+# docs screenshots not needed
+docs/screenshots/
