@@ -553,6 +553,24 @@ Triggered by: Push to lab6 branch with changes in ansible/ or workflow file.
 2. Deploy: Runs deploy playbook (only if lint passes)
 3. Verify: Curl health endpoint
 
+**Workflow Run Evidence:**
+
+**Run Completed Successfully**
+- **Link:** https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/22630989303
+
+**Job Results:**
+1. **Ansible Lint Job:**
+   - Linted all playbooks in `labs_solution/lab6/ansible/playbooks/`
+
+2. **Deploy Job:**
+   - SSH setup: Connected to 158.160.85.69
+
+3. **Verification Job:**
+   - Health endpoint curl: HTTP 200 response
+
+
+**Total Pipeline Duration:** 2m 54s
+
 **Status badge for README:**
 ```markdown
 [![Ansible Deployment](https://github.com/your-username/repo/actions/workflows/ansible-deploy.yml/badge.svg)](https://github.com/your-username/repo/actions/workflows/ansible-deploy.yml)
