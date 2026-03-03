@@ -1,0 +1,180 @@
+---
+# Task 1: Docker Installation Role with Blocks & Tags
+# This role installs Docker and related tools with error handling
+# Uses blocks for logical grouping and tags for selective execution
+
+- name: Install Docker prerequisites with error handling
+  block:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-docker
+          - python3-pip
+        state: present
+
+  rescue:
+    - name: Handle dependency installation failure
+      apt:
+        update_cache: yes
+        update_cache_retries: 3
+
+  always:
+    - name: Log dependency installation
+      debug:
+        msg: "Docker dependency installation completed"
+
+  become: true
+  tags:
+    - packages
+    - docker
+    - docker_install
+
+- name: Add Docker repository with error handling
+  block:
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+        keyring: /usr/share/keyrings/docker-archive-keyring.gpg
+      retries: 3
+      delay: 10
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+
+  rescue:
+    - name: Wait and retry on GPG key failure
+      pause:
+        seconds: 10
+
+    - name: Retry Docker GPG key addition
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+        keyring: /usr/share/keyrings/docker-archive-keyring.gpg
+      retries: 2
+      delay: 5
+
+  always:
+    - name: Log repository configuration
+      debug:
+        msg: "Docker repository configuration completed"
+
+  become: true
+  tags:
+    - docker
+    - docker_install
+
+- name: Install Docker packages
+  block:
+    - name: Update apt cache before Docker install
+      apt:
+        update_cache: yes
+        cache_valid_time: 300
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+  rescue:
+    - name: Handle Docker package installation failure
+      debug:
+        msg: "Docker package installation encountered an issue"
+
+  always:
+    - name: Log Docker installation completion
+      copy:
+        content: "Docker packages installed at {{ ansible_date_time.iso8601 }}"
+        dest: /tmp/docker_installed.log
+      become: true
+
+  become: true
+  tags:
+    - docker
+    - docker_install
+
+- name: Configure Docker service
+  block:
+    - name: Ensure Docker service is started
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Ensure Docker service is enabled
+      service:
+        name: docker
+        enabled: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+  rescue:
+    - name: Handle service configuration failure
+      debug:
+        msg: "Docker service configuration encountered an issue"
+
+  always:
+    - name: Log Docker configuration completion
+      debug:
+        msg: "Docker service configuration completed"
+
+  become: true
+  tags:
+    - docker
+    - docker_config
+
+- name: Install docker-compose Python library
+  block:
+    - name: Install docker-compose via pip
+      pip:
+        name:
+          - docker
+          - docker-compose
+        state: present
+        executable: pip3
+
+  rescue:
+    - name: Handle pip installation failure
+      debug:
+        msg: "docker-compose pip installation encountered an issue"
+
+  become: true
+  tags:
+    - docker
+    - docker_config
+
+- name: Verify Docker installation
+  block:
+    - name: Get Docker version
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Display Docker version
+      debug:
+        msg: "{{ docker_version.stdout }}"
+
+  tags:
+    - docker

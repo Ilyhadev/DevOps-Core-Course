@@ -1,0 +1,29 @@
+---
+# Application Configuration
+app_name: devops-app
+docker_image: iliadocker21/devops-info-python
+docker_tag: latest
+app_port: 8000
+app_internal_port: 8080
+
+# Docker Compose Config
+compose_project_dir: "/opt/{{ app_name }}"
+docker_compose_version: "3.8"
+
+# Common role configuration
+common_packages:
+  - python3-pip
+  - curl
+  - git
+  - vim
+  - htop
+  - wget
+  - net-tools
+  - jq
+
+app_user: appuser
+app_user_sudoer: false
+
+# Docker Compose environment variables
+app_environment:
+  ENVIRONMENT: production

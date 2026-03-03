@@ -1,0 +1,23 @@
+---
+# Task 2 & 3: Web App Role Defaults
+# Application Configuration
+
+app_name: devops-app
+docker_image: your_dockerhub_username/devops-info-service
+docker_tag: latest
+app_port: 8000
+app_internal_port: 8000
+
+# Docker Compose Config
+compose_project_dir: "/opt/{{ app_name }}"
+docker_compose_version: "3.8"
+
+# Wipe Logic Control (Task 3)
+# Set to true to remove application completely
+# Usage: ansible-playbook deploy.yml -e "web_app_wipe=true"
+web_app_wipe: false
+
+# Environment variables for the application
+app_environment: {}
+#  ENVIRONMENT: production
+#  LOG_LEVEL: info

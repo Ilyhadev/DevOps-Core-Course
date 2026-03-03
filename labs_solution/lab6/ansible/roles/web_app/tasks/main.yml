@@ -1,0 +1,93 @@
+---
+# Task 3: Include wipe tasks (runs first when requested)
+- name: Include wipe tasks
+  include_tasks: wipe.yml
+  tags:
+    - web_app_wipe
+
+# Task 2: Deploy application with Docker Compose
+- name: Deploy application with Docker Compose
+  block:
+    - name: Create application directory
+      file:
+        path: "{{ compose_project_dir }}"
+        state: directory
+        mode: '0755'
+      become: true
+
+    - name: Template docker-compose.yml
+      template:
+        src: docker-compose.yml.j2
+        dest: "{{ compose_project_dir }}/docker-compose.yml"
+        mode: '0644'
+      become: true
+      register: compose_template_result
+
+    - name: Pull latest image
+      community.docker.docker_image:
+        name: "{{ docker_image }}:{{ docker_tag }}"
+        source: pull
+      register: image_pull_result
+      ignore_errors: true
+
+    - name: Deploy with docker-compose up
+      community.docker.docker_compose_v2:
+        project_src: "{{ compose_project_dir }}"
+        state: present
+        pull: always
+      become: true
+      register: docker_compose_result
+
+    - name: Wait for application to be ready
+      wait_for:
+        port: "{{ app_port }}"
+        delay: 5
+        timeout: 60
+      become: true
+
+    - name: Verify application health endpoint
+      uri:
+        url: "http://localhost:{{ app_port }}/health"
+        method: GET
+        status_code: 200
+      register: health_check
+      retries: 5
+      delay: 3
+      until: health_check.status == 200
+      ignore_errors: true
+
+    - name: Display health check result
+      debug:
+        msg: "Application {{ app_name }} is healthy: {{ health_check.status | default('UNKNOWN') }}"
+
+    - name: Create deployment log
+      copy:
+        content: |
+          Application {{ app_name }} deployed successfully at {{ ansible_date_time.iso8601 }}
+          Docker Image: {{ docker_image }}:{{ docker_tag }}
+          Port: {{ app_port }}
+          Compose Directory: {{ compose_project_dir }}
+        dest: "/tmp/{{ app_name }}_deployed.log"
+      become: true
+
+  rescue:
+    - name: Handle deployment failure
+      debug:
+        msg: "Application deployment encountered an issue. Check logs above."
+
+  tags:
+    - app_deploy
+    - compose
+
+- name: Display deployment summary
+  debug:
+    msg: |
+      Application Deployment Summary:
+      - Name: {{ app_name }}
+      - Image: {{ docker_image }}:{{ docker_tag }}
+      - Port: {{ app_port }}
+      - Directory: {{ compose_project_dir }}
+      - Access at: http://localhost:{{ app_port }}/
+  tags:
+    - app_deploy
+    - compose

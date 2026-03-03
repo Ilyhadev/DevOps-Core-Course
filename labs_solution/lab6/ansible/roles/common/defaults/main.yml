@@ -1,0 +1,21 @@
+---
+# Common role defaults
+# These can be overridden in group_vars, host_vars, or at runtime
+
+common_packages:
+  - python3-pip
+  - python3-venv
+  - curl
+  - git
+  - vim
+  - htop
+  - wget
+  - net-tools
+  - jq
+  - apt-transport-https
+  - ca-certificates
+  - software-properties-common
+
+# Optional: Configure an application user
+app_user: "appuser"
+app_user_sudoer: false

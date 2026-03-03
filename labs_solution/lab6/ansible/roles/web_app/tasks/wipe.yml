@@ -1,0 +1,47 @@
+---
+# Task 3: Wipe Logic Implementation
+# This file handles safe removal of deployed applications
+# Key Safety Features:
+# 1. Controlled by variable: web_app_wipe (must be true)
+# 2. Gated by specific tag: web_app_wipe (must be specified)
+# This double-gating ensures wipe doesn't run accidentally
+
+- name: Wipe web application
+  block:
+    - name: Check if compose file exists
+      stat:
+        path: "{{ compose_project_dir }}/docker-compose.yml"
+      register: compose_file_stat
+
+    - name: Stop and remove containers with Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ compose_project_dir }}"
+        state: absent
+      when: compose_file_stat.stat.exists
+      ignore_errors: true
+
+    - name: Remove docker-compose.yml file
+      file:
+        path: "{{ compose_project_dir }}/docker-compose.yml"
+        state: absent
+
+    - name: Remove application directory
+      file:
+        path: "{{ compose_project_dir }}"
+        state: absent
+
+    - name: Log wipe completion
+      debug:
+        msg: "Application {{ app_name }} wiped successfully at {{ ansible_date_time.iso8601 }}"
+
+    - name: Create wipe log file
+      copy:
+        content: "Application {{ app_name }} was wiped at {{ ansible_date_time.iso8601 }}\n"
+        dest: "/tmp/{{ app_name }}_wipe.log"
+      become: true
+
+  # When condition provides first gate: variable must be true
+  # Tag provides second gate: --tags web_app_wipe must be specified
+  when: web_app_wipe | bool
+  tags:
+    - web_app_wipe
