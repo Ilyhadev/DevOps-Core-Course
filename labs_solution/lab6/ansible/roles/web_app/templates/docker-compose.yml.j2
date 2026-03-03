@@ -1,0 +1,30 @@
+version: '{{ web_app_docker_compose_version }}'
+
+services:
+  {{ web_app_name }}:
+    image: {{ web_app_docker_image }}:{{ web_app_docker_tag }}
+    container_name: {{ web_app_name }}
+    ports:
+      - "{{ web_app_port }}:{{ web_app_internal_port }}"
+    environment:
+{% if web_app_environment %}
+{% for key, value in web_app_environment.items() %}
+      {{ key }}: {{ value | string | quote }}
+{% endfor %}
+{% else %}
+      ENVIRONMENT: production
+{% endif %}
+    restart: unless-stopped
+    # Optional: Add health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:{{ web_app_internal_port }}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Optional: Add logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

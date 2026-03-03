@@ -1,4 +1,6 @@
-## Lab 1, SD-02 Ilia Kliantsevich
+## Lab 1, 2, 3, SD-02 Ilia Kliantsevich
+
+![CI status](https://github.com/Ilyhadev/DevOps-Core-Course/actions/workflows/python-ci.yml/badge.svg)
 
 ### Overview
 
@@ -17,6 +19,25 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+### Testing (pytest)
+
+I chose pytest as the test framework because it has concise syntax, powerful fixtures, and a large ecosystem of plugins. Tests live in `tests/` and use Flask's test client.
+
+To run tests locally:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+pytest -q
+```
+
+Notes:
+- Framework: pytest (see `requirements-dev.txt`)
+- Tests cover the main endpoint `/`, `/health` and the 404 handler. They assert JSON structure and basic types.
+
 
 ### Running the application
 
@@ -72,3 +93,13 @@ This section explains the command patterns to build, run and pull your container
   ```
 
 
+### How to Test Locally
+Note: see expected output and more info in docs/LAB03 
+```bash
+# Install test dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest -v
+```
