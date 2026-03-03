@@ -1,93 +1,93 @@
 ---
 # Task 3: Include wipe tasks (runs first when requested)
 - name: Include wipe tasks
-  include_tasks: wipe.yml
+  ansible.builtin.include_tasks: wipe.yml
   tags:
     - web_app_wipe
 
 # Task 2: Deploy application with Docker Compose
 - name: Deploy application with Docker Compose
+  tags:
+    - app_deploy
+    - compose
   block:
     - name: Create application directory
-      file:
-        path: "{{ compose_project_dir }}"
+      ansible.builtin.file:
+        path: "{{ web_app_compose_project_dir }}"
         state: directory
         mode: '0755'
       become: true
 
     - name: Template docker-compose.yml
-      template:
+      ansible.builtin.template:
         src: docker-compose.yml.j2
-        dest: "{{ compose_project_dir }}/docker-compose.yml"
+        dest: "{{ web_app_compose_project_dir }}/docker-compose.yml"
         mode: '0644'
       become: true
-      register: compose_template_result
+      register: web_app_compose_template_result
 
     - name: Pull latest image
-      community.docker.docker_image:
-        name: "{{ docker_image }}:{{ docker_tag }}"
-        source: pull
-      register: image_pull_result
-      ignore_errors: true
+      ansible.builtin.shell: |
+        docker pull {{ web_app_docker_image }}:{{ web_app_docker_tag }}
+      register: web_app_image_pull_result
+      failed_when: false
+      changed_when: "'Already exists' not in web_app_image_pull_result.stderr"
 
     - name: Deploy with docker-compose up
-      community.docker.docker_compose_v2:
-        project_src: "{{ compose_project_dir }}"
-        state: present
-        pull: always
+      ansible.builtin.shell: |
+        cd {{ web_app_compose_project_dir }}
+        docker-compose up -d
       become: true
-      register: docker_compose_result
+      register: web_app_docker_compose_result
+      changed_when: "'started' in web_app_docker_compose_result.stderr or 'Pulling' in web_app_docker_compose_result.stderr"
 
     - name: Wait for application to be ready
-      wait_for:
-        port: "{{ app_port }}"
+      ansible.builtin.wait_for:
+        port: "{{ web_app_port }}"
         delay: 5
         timeout: 60
       become: true
 
     - name: Verify application health endpoint
-      uri:
-        url: "http://localhost:{{ app_port }}/health"
+      ansible.builtin.uri:
+        url: "http://localhost:{{ web_app_port }}/health"
         method: GET
         status_code: 200
-      register: health_check
+      register: web_app_health_check
       retries: 5
       delay: 3
-      until: health_check.status == 200
-      ignore_errors: true
+      until: web_app_health_check.status == 200
+      failed_when: false
 
     - name: Display health check result
-      debug:
-        msg: "Application {{ app_name }} is healthy: {{ health_check.status | default('UNKNOWN') }}"
+      ansible.builtin.debug:
+        msg: "Application {{ web_app_name }} is healthy: {{ web_app_health_check.status | default('UNKNOWN') }}"
 
     - name: Create deployment log
-      copy:
+      ansible.builtin.copy:
         content: |
-          Application {{ app_name }} deployed successfully at {{ ansible_date_time.iso8601 }}
-          Docker Image: {{ docker_image }}:{{ docker_tag }}
-          Port: {{ app_port }}
-          Compose Directory: {{ compose_project_dir }}
-        dest: "/tmp/{{ app_name }}_deployed.log"
+          Application {{ web_app_name }} deployed successfully at {{ ansible_date_time.iso8601 }}
+          Docker Image: {{ web_app_docker_image }}:{{ web_app_docker_tag }}
+          Port: {{ web_app_port }}
+          Compose Directory: {{ web_app_compose_project_dir }}
+        dest: "/tmp/{{ web_app_name }}_deployed.log"
+        mode: '0644'
       become: true
 
   rescue:
     - name: Handle deployment failure
-      debug:
+      ansible.builtin.debug:
         msg: "Application deployment encountered an issue. Check logs above."
 
-  tags:
-    - app_deploy
-    - compose
-
 - name: Display deployment summary
-  debug:
+  ansible.builtin.debug:
     msg: |
       Application Deployment Summary:
-      - Name: {{ app_name }}
-      - Image: {{ docker_image }}:{{ docker_tag }}
-      - Port: {{ app_port }}
-      - Directory: {{ compose_project_dir }}
-      - Access at: http://localhost:{{ app_port }}/
+      - Name: {{ web_app_name }}
+      - Image: {{ web_app_docker_image }}:{{ web_app_docker_tag }}
+      - Port: {{ web_app_port }}
+      - Directory: {{ web_app_compose_project_dir }}
+      - Access at: http://localhost:{{ web_app_port }}/
   tags:
     - app_deploy
     - compose

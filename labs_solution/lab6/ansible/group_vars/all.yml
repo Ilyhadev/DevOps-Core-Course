@@ -1,14 +1,14 @@
 ---
 # Application Configuration
-app_name: devops-app
-docker_image: iliadocker21/devops-info-python
-docker_tag: latest
-app_port: 8000
-app_internal_port: 8080
+web_app_name: devops-app
+web_app_docker_image: iliadocker21/devops-info-python
+web_app_docker_tag: latest
+web_app_port: 8000
+web_app_internal_port: 8080
 
 # Docker Compose Config
-compose_project_dir: "/opt/{{ app_name }}"
-docker_compose_version: "3.8"
+web_app_compose_project_dir: "/opt/{{ web_app_name }}"
+web_app_docker_compose_version: "3.8"
 
 # Common role configuration
 common_packages:
@@ -21,9 +21,9 @@ common_packages:
   - net-tools
   - jq
 
-app_user: appuser
-app_user_sudoer: false
+common_app_user: appuser
+common_app_user_sudoer: false
 
 # Docker Compose environment variables
-app_environment:
+web_app_environment:
   ENVIRONMENT: production

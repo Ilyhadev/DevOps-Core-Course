@@ -17,5 +17,5 @@ common_packages:
   - software-properties-common
 
 # Optional: Configure an application user
-app_user: "appuser"
-app_user_sudoer: false
+common_app_user: "appuser"
+common_app_user_sudoer: false
