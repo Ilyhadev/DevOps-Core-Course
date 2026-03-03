@@ -69,7 +69,7 @@ jobs:
 
       - name: Deploy with Ansible
         run: |
-          cd ansible
+          cd labs_solution/lab6/ansible
           ansible-playbook playbooks/deploy.yml \
             -i inventory/hosts.ini \
             --vault-password-file /tmp/vault_pass \
