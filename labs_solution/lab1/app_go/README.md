@@ -39,3 +39,25 @@ PORT=3000 ./devops-info-service
 
 - The JSON structure mirrors the Python version from Task 1 for parity (the `python_version` field contains the Go runtime version in this implementation).
 - Comparisson between python and go binaries is done in `app_go/docs/LAB01.md`
+
+### Docker (multi-stage)
+
+Build (from repo root):
+```bash
+docker build -t iliadocker21/devops-info-go:lab02 \
+  -f labs_solution/lab1/app_go/Dockerfile labs_solution/lab1/app_go
+```
+
+Run:
+```bash
+docker run --rm -d --name lab2_go -p 8081:8080 iliadocker21/devops-info-go:lab02 && sleep 0.8 && docker logs lab2_go --tail 50
+```
+Check:
+```curl -s http://127.0.0.1:8081/ | jq```
+
+Measure image size:
+```bash
+docker images --format '{{.Repository}}:{{.Tag}}\t{{.Size}}' | grep devops-info-go
+```
+
+See more (outputs & commands) at ```app_go/docs/screenshots/*.png``` and ```app_go/docs/LAB02.md```.

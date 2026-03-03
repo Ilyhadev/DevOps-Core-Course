@@ -22,6 +22,7 @@ const (
 )
 
 var startTime time.Time
+var debug bool
 
 // Same keys as Python app
 type Service struct {
@@ -154,6 +155,19 @@ func clientIP(r *http.Request) string {
     return addr
 }
 
+// loggingMiddleware logs each incoming request. When the DEBUG env var is set
+// to a non-empty value, it logs extra information (User-Agent).
+func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        ip := clientIP(r)
+        log.Printf("request: %s %s %s", ip, r.Method, r.URL.Path)
+        if debug {
+            log.Printf("  user-agent: %s", r.UserAgent())
+        }
+        next(w, r)
+    }
+}
+
 // Handler for GET /
 func mainHandler(w http.ResponseWriter, r *http.Request) {
     secs, human := getUptime()
@@ -198,8 +212,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
     startTime = time.Now()
-    http.HandleFunc("/", mainHandler)
-    http.HandleFunc("/health", healthHandler)
+    // Wrap handlers with logging middleware so each request is logged.
+    http.HandleFunc("/", loggingMiddleware(mainHandler))
+    http.HandleFunc("/health", loggingMiddleware(healthHandler))
 
     // Allow binding to a specific host/IP using HOST env variable (optional).
     // If HOST is empty or set to 0.0.0.0 we bind on all interfaces with :PORT.
@@ -211,6 +226,12 @@ func main() {
     port := os.Getenv("PORT")
     if port == "" {
         port = "8080"
+    }
+
+    // Enable debug logging if requested via environment variable
+    if os.Getenv("DEBUG") != "" {
+        debug = true
+        log.Printf("DEBUG logging enabled")
     }
 
     var addr string
