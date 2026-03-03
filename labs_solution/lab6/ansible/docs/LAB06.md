@@ -541,7 +541,7 @@ Required secrets in Settings -> Secrets and variables -> Actions:
 |--------|-------|
 | ANSIBLE_VAULT_PASSWORD | Vault password |
 | SSH_PRIVATE_KEY | ~/.ssh/id_rsa content |
-| VM_HOST | 158.160.85.69 |
+| VM_HOST | 84.252.136.145 |
 | VM_USER | ubuntu |
 
 ### Workflow Execution
@@ -556,14 +556,14 @@ Triggered by: Push to lab6 branch with changes in ansible/ or workflow file.
 **Workflow Run Evidence:**
 
 **Run Completed Successfully**
-- **Link:** https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/22630989303
+- **Link:** https://github.com/Ilyhadev/DevOps-Core-Course/actions/runs/22632859840/job/65587702083
 
 **Job Results:**
 1. **Ansible Lint Job:**
    - Linted all playbooks in `labs_solution/lab6/ansible/playbooks/`
 
 2. **Deploy Job:**
-   - SSH setup: Connected to 158.160.85.69
+   - SSH setup: Connected to 84.252.136.145
 
 3. **Verification Job:**
    - Health endpoint curl: HTTP 200 response
