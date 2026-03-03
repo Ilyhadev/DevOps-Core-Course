@@ -36,10 +36,10 @@
     - name: Deploy with docker-compose up
       ansible.builtin.shell: |
         cd {{ web_app_compose_project_dir }}
-        docker-compose up -d
+        docker compose up -d
       become: true
       register: web_app_docker_compose_result
-      changed_when: "'started' in web_app_docker_compose_result.stderr or 'Pulling' in web_app_docker_compose_result.stderr"
+      changed_when: "'started' in web_app_docker_compose_result.stderr or 'Pulling' in web_app_docker_compose_result.stderr or 'Creating' in web_app_docker_compose_result.stdout"
 
     - name: Wait for application to be ready
       ansible.builtin.wait_for:

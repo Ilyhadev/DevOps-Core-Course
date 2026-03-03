@@ -19,7 +19,7 @@
     - name: Stop and remove containers with Docker Compose
       ansible.builtin.shell: |
         cd {{ web_app_compose_project_dir }}
-        docker-compose down
+        docker compose down
       when: web_app_compose_file_stat.stat.exists
       failed_when: false
       changed_when: "'Removing' in ansible_docker_compose_down.stderr or 'Removing' in ansible_docker_compose_down.stdout"
