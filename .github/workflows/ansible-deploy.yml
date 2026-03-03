@@ -62,7 +62,7 @@ jobs:
 
       - name: Create Ansible configuration
         run: |
-          cd ansible
+          cd labs_solution/lab6/ansible
           mkdir -p /tmp/ansible_cache
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /tmp/vault_pass
           chmod 600 /tmp/vault_pass
