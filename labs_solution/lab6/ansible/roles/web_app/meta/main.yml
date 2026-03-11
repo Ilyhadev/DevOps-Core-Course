@@ -1,0 +1,9 @@
+---
+# Task 2: Role Dependencies
+# web_app role depends on docker role to ensure Docker is installed first
+
+dependencies:
+  - role: docker
+    tags:
+      - docker
+      - web_app
