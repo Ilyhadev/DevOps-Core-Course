@@ -61,3 +61,14 @@ docker images --format '{{.Repository}}:{{.Tag}}\t{{.Size}}' | grep devops-info-
 ```
 
 See more (outputs & commands) at ```app_go/docs/screenshots/*.png``` and ```app_go/docs/LAB02.md```.
+
+
+### To Test
+```go test -v
+=== RUN   TestMainHandler
+--- PASS: TestMainHandler (0.00s)
+=== RUN   TestHealthHandler
+--- PASS: TestHealthHandler (0.00s)
+PASS
+ok      devops-info-service     0.005s
+```
