@@ -2,15 +2,16 @@
 DevOps Info Service - minimal Flask implementation for Lab 1
 """
 
-import json
 import logging
 import os
 import platform
 import socket
 import sys
+import time
 from datetime import datetime, timezone
 
-from flask import Flask, jsonify, request
+from flask import Flask, Response, g, jsonify, request
+from prometheus_client import Counter, Gauge, Histogram, generate_latest
 from pythonjsonlogger import jsonlogger
 
 # Application metadata
@@ -55,6 +56,39 @@ logger.info("Application starting", extra={
 
 START_TIME = datetime.now(timezone.utc)
 
+# Prometheus metrics
+http_requests_total = Counter(
+    "http_requests_total",
+    "Total HTTP requests",
+    ["method", "endpoint", "status_code"],
+)
+http_request_duration_seconds = Histogram(
+    "http_request_duration_seconds",
+    "HTTP request duration",
+    ["method", "endpoint"],
+)
+http_requests_in_progress = Gauge(
+    "http_requests_in_progress",
+    "HTTP requests currently being processed",
+)
+
+# Application-specific metrics
+endpoint_calls = Counter(
+    "devops_info_endpoint_calls",
+    "Endpoint calls",
+    ["endpoint"],
+)
+system_info_duration = Histogram(
+    "devops_info_system_collection_seconds",
+    "System info collection time",
+)
+
+
+def _endpoint_label():
+    if request.url_rule and request.url_rule.rule:
+        return request.url_rule.rule
+    return request.path or "unknown"
+
 
 @app.before_request
 def log_request_info():
@@ -85,6 +119,29 @@ def log_request_info():
         })
 
 
+@app.before_request
+def start_metrics_timer():
+    g.start_time = time.perf_counter()
+    http_requests_in_progress.inc()
+
+
+@app.after_request
+def record_request_metrics(response):
+    endpoint = _endpoint_label()
+    method = request.method
+    status_code = str(response.status_code)
+
+    duration = time.perf_counter() - getattr(g, "start_time", time.perf_counter())
+    http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe(duration)
+    http_requests_total.labels(
+        method=method,
+        endpoint=endpoint,
+        status_code=status_code,
+    ).inc()
+    http_requests_in_progress.dec()
+    return response
+
+
 def get_system_info():
     """Collect basic system information."""
     return {
@@ -111,7 +168,8 @@ def get_uptime():
 
 @app.route("/")
 def index():
-    system = get_system_info()
+    with system_info_duration.time():
+        system = get_system_info()
     uptime = get_uptime()
     now = datetime.now(timezone.utc).isoformat()
 
@@ -127,6 +185,7 @@ def index():
             "status": 200
         }
     )
+    endpoint_calls.labels(endpoint="/").inc()
 
     payload = {
         "service": {
@@ -175,6 +234,7 @@ def health():
             "uptime_seconds": uptime
         }
     )
+    endpoint_calls.labels(endpoint="/health").inc()
     return jsonify(
         {
             "status": "healthy",
@@ -182,6 +242,11 @@ def health():
             "uptime_seconds": uptime,
         }
     )
+
+
+@app.route("/metrics")
+def metrics():
+    return Response(generate_latest(), mimetype="text/plain; version=0.0.4; charset=utf-8")
 
 
 @app.errorhandler(404)
