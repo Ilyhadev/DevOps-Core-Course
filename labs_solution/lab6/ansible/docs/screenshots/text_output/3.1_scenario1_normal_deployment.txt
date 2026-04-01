@@ -1,0 +1,127 @@
+
+PLAY [Deploy application] ******************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [lab6-vm]
+
+TASK [docker : Update apt cache] ***********************************************
+ok: [lab6-vm]
+
+TASK [docker : Install Docker dependencies] ************************************
+ok: [lab6-vm]
+
+TASK [docker : Log dependency installation] ************************************
+ok: [lab6-vm] => {
+    "msg": "Docker dependency installation completed"
+}
+
+TASK [docker : Add Docker GPG key] *********************************************
+ok: [lab6-vm]
+
+TASK [docker : Add Docker repository] ******************************************
+ok: [lab6-vm]
+
+TASK [docker : Log repository configuration] ***********************************
+ok: [lab6-vm] => {
+    "msg": "Docker repository configuration completed"
+}
+
+TASK [docker : Update apt cache before Docker install] *************************
+changed: [lab6-vm]
+
+TASK [docker : Install Docker packages] ****************************************
+ok: [lab6-vm]
+
+TASK [docker : Log Docker installation completion] *****************************
+changed: [lab6-vm]
+
+TASK [docker : Ensure Docker service is started] *******************************
+ok: [lab6-vm]
+
+TASK [docker : Ensure Docker service is enabled] *******************************
+ok: [lab6-vm]
+
+TASK [docker : Add ubuntu user to docker group] ********************************
+ok: [lab6-vm]
+
+TASK [docker : Log Docker configuration completion] ****************************
+ok: [lab6-vm] => {
+    "msg": "Docker service configuration completed"
+}
+
+TASK [docker : Install docker-compose via pip] *********************************
+fatal: [lab6-vm]: FAILED! => {"changed": false, "cmd": ["/usr/bin/pip3", "install", "docker", "docker-compose"], "msg": "\n:stderr: error: externally-managed-environment\n\n× This environment is externally managed\n╰─> To install Python packages system-wide, try apt install\n    python3-xyz, where xyz is the package you are trying to\n    install.\n    \n    If you wish to install a non-Debian-packaged Python package,\n    create a virtual environment using python3 -m venv path/to/venv.\n    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make\n    sure you have python3-full installed.\n    \n    If you wish to install a non-Debian packaged Python application,\n    it may be easiest to use pipx install xyz, which will manage a\n    virtual environment for you. Make sure you have pipx installed.\n    \n    See /usr/share/doc/python3.12/README.venv for more information.\n\nnote: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.\nhint: See PEP 668 for the detailed specification.\n"}
+
+TASK [docker : Handle pip installation failure] ********************************
+ok: [lab6-vm] => {
+    "msg": "docker-compose pip installation encountered an issue"
+}
+
+TASK [docker : Get Docker version] *********************************************
+ok: [lab6-vm]
+
+TASK [docker : Display Docker version] *****************************************
+ok: [lab6-vm] => {
+    "msg": "Docker version 29.2.1, build a5c7197"
+}
+
+TASK [web_app : Include wipe tasks] ********************************************
+included: /home/ilia/Desktop/vsCode/DevOps/DevOps-Core-Course/labs_solution/lab6/ansible/roles/web_app/tasks/wipe.yml for lab6-vm
+
+TASK [web_app : Check if compose file exists] **********************************
+skipping: [lab6-vm]
+
+TASK [web_app : Stop and remove containers with Docker Compose] ****************
+skipping: [lab6-vm]
+
+TASK [web_app : Remove docker-compose.yml file] ********************************
+skipping: [lab6-vm]
+
+TASK [web_app : Remove application directory] **********************************
+skipping: [lab6-vm]
+
+TASK [web_app : Log wipe completion] *******************************************
+skipping: [lab6-vm]
+
+TASK [web_app : Create wipe log file] ******************************************
+skipping: [lab6-vm]
+
+TASK [web_app : Create application directory] **********************************
+ok: [lab6-vm]
+
+TASK [web_app : Template docker-compose.yml] ***********************************
+ok: [lab6-vm]
+
+TASK [web_app : Pull latest image] *********************************************
+ok: [lab6-vm]
+
+TASK [web_app : Deploy with docker-compose up] *********************************
+[WARNING]: Cannot parse event from line: 'time="2026-03-03T14:54:34Z"
+level=warning msg="/opt/devops-app/docker-compose.yml: the attribute `version`
+is obsolete, it will be ignored, please remove it to avoid potential
+confusion"'. Please report this at https://github.com/ansible-collections/commu
+nity.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md
+changed: [lab6-vm]
+
+TASK [web_app : Wait for application to be ready] ******************************
+ok: [lab6-vm]
+
+TASK [web_app : Verify application health endpoint] ****************************
+ok: [lab6-vm]
+
+TASK [web_app : Display health check result] ***********************************
+ok: [lab6-vm] => {
+    "msg": "Application devops-app is healthy: 200"
+}
+
+TASK [web_app : Create deployment log] *****************************************
+changed: [lab6-vm]
+
+TASK [web_app : Display deployment summary] ************************************
+ok: [lab6-vm] => {
+    "msg": "Application Deployment Summary:\n- Name: devops-app\n- Image: iliadocker21/devops-info-python:latest\n- Port: 8000\n- Directory: /opt/devops-app\n- Access at: http://localhost:8000/\n"
+}
+
+PLAY RECAP *********************************************************************
+lab6-vm                    : ok=27   changed=4    unreachable=0    failed=0    skipped=6    rescued=1    ignored=0   
+

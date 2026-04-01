@@ -1,0 +1,41 @@
+Using /home/ilia/Desktop/vsCode/DevOps/DevOps-Core-Course/labs_solution/lab6/ansible.cfg as config file
+
+PLAY [Provision web servers] ***************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [lab6-vm]
+
+TASK [docker : Update apt cache] ***********************************************
+ok: [lab6-vm] => {"cache_update_time": 1772545756, "cache_updated": false, "changed": false}
+
+TASK [docker : Install Docker dependencies] ************************************
+ok: [lab6-vm] => {"cache_update_time": 1772545756, "cache_updated": false, "changed": false}
+
+TASK [docker : Log dependency installation] ************************************
+ok: [lab6-vm] => {
+    "msg": "Docker dependency installation completed"
+}
+
+TASK [docker : Add Docker GPG key] *********************************************
+ok: [lab6-vm] => {"attempts": 1, "before": ["8D81803C0EBFCD88", "7EA0A9C3F273FCD8"], "changed": false, "fp": "8D81803C0EBFCD88", "id": "8D81803C0EBFCD88", "key_id": "8D81803C0EBFCD88", "short_id": "0EBFCD88"}
+
+TASK [docker : Add Docker repository] ******************************************
+ok: [lab6-vm] => {"changed": false, "repo": "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu noble stable", "sources_added": [], "sources_removed": [], "state": "present"}
+
+TASK [docker : Log repository configuration] ***********************************
+ok: [lab6-vm] => {
+    "msg": "Docker repository configuration completed"
+}
+
+TASK [docker : Update apt cache before Docker install] *************************
+ok: [lab6-vm] => {"cache_update_time": 1772545756, "cache_updated": false, "changed": false}
+
+TASK [docker : Install Docker packages] ****************************************
+ok: [lab6-vm] => {"cache_update_time": 1772546026, "cache_updated": true, "changed": false}
+
+TASK [docker : Log Docker installation completion] *****************************
+changed: [lab6-vm] => {"changed": true, "checksum": "674b49bfb442716c5598526e2ce93aee356c7e43", "dest": "/tmp/docker_installed.log", "gid": 0, "group": "root", "md5sum": "fa1f0466d18bc7b97a1ce956ce395439", "mode": "0644", "owner": "root", "size": 49, "src": "/home/ubuntu/.ansible/tmp/ansible-tmp-1772546028.3472083-285147-116245513016404/source", "state": "file", "uid": 0}
+
+PLAY RECAP *********************************************************************
+lab6-vm                    : ok=10   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

@@ -1,0 +1,32 @@
+
+PLAY [Deploy application] ******************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [lab6-vm]
+
+TASK [web_app : Include wipe tasks] ********************************************
+included: /home/ilia/Desktop/vsCode/DevOps/DevOps-Core-Course/labs_solution/lab6/ansible/roles/web_app/tasks/wipe.yml for lab6-vm
+
+TASK [web_app : Check if compose file exists] **********************************
+ok: [lab6-vm]
+
+TASK [web_app : Stop and remove containers with Docker Compose] ****************
+skipping: [lab6-vm]
+
+TASK [web_app : Remove docker-compose.yml file] ********************************
+ok: [lab6-vm]
+
+TASK [web_app : Remove application directory] **********************************
+ok: [lab6-vm]
+
+TASK [web_app : Log wipe completion] *******************************************
+ok: [lab6-vm] => {
+    "msg": "Application devops-app wiped successfully at 2026-03-03T15:03:02Z"
+}
+
+TASK [web_app : Create wipe log file] ******************************************
+changed: [lab6-vm]
+
+PLAY RECAP *********************************************************************
+lab6-vm                    : ok=7    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+

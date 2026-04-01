@@ -13,6 +13,11 @@ RUN groupadd --gid 1000 app \
 
 WORKDIR /app
 
+# install system dependencies (curl for health checks)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # install runtime deps first to leverage Docker layer cache
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt \
