@@ -1,0 +1,7 @@
+---
+# Docker role defaults
+# These can be overridden in group_vars or host_vars
+
+docker_package_state: present
+docker_service_enabled: true
+docker_service_state: started

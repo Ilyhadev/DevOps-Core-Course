@@ -1,0 +1,11 @@
+---
+# Provision playbook: Sets up the infrastructure (common packages and Docker)
+# This prepares the VM for application deployment
+
+- name: Provision web servers
+  hosts: webservers
+  become: true
+
+  roles:
+    - common
+    - docker
