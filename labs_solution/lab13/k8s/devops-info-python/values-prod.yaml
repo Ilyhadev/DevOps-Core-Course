@@ -1,0 +1,26 @@
+replicaCount: 5
+
+image:
+  tag: "lab13"
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8080
+  nodePort: null
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+
+readinessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 3

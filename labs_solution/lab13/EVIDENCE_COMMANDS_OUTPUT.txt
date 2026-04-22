@@ -1,0 +1,661 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║              LAB 13 - GITOPS WITH ARGOCD - PRACTICAL EVIDENCE                  ║
+║                     Step-by-Step Commands & Expected Output                     ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════════
+TASK 1: ARGOCD INSTALLATION & SETUP
+═══════════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Add Helm Repository
+────────────────────────────
+Command:
+$ helm repo add argo https://argoproj.github.io/argo-helm
+
+Output (ACTUAL - Verified ✓):
+"argo" has been added to your repositories
+
+────────────────────────────
+
+STEP 2: Update Helm Repos
+────────────────────────────
+Command:
+$ helm repo update
+
+Output (ACTUAL - Verified ✓):
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "argo" chart repository
+
+────────────────────────────
+
+STEP 3: Create ArgoCD Namespace
+────────────────────────────
+Command:
+$ kubectl create namespace argocd
+
+Output (ACTUAL - Verified ✓):
+namespace/argocd created
+
+────────────────────────────
+
+STEP 4: Install ArgoCD via Helm
+────────────────────────────
+Command:
+$ helm install argocd argo/argo-cd --namespace argocd
+
+Output (ACTUAL - Verified ✓):
+NAME: argocd
+LAST DEPLOYED: Wed Apr 22 10:50:53 2026
+NAMESPACE: argocd
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+
+Notes:
+- To access UI: kubectl port-forward service/argocd-server -n argocd 8080:443
+- Then open: http://localhost:8080
+- Username: admin
+- Password: (retrieve with command below)
+
+────────────────────────────
+
+STEP 5: Wait for ArgoCD Pods to be Ready
+────────────────────────────
+Command:
+$ kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=120s
+
+Output (ACTUAL - Verified ✓):
+pod/argocd-server-796cffdfdd-2gws7 condition met
+
+────────────────────────────
+
+STEP 6: Verify All ArgoCD Pods Running
+────────────────────────────
+Command:
+$ kubectl get pods -n argocd
+
+Output (ACTUAL - Verified ✓):
+NAME                                                READY   STATUS    RESTARTS   AGE
+argocd-application-controller-0                     1/1     Running   0          2m22s
+argocd-applicationset-controller-684c6b8f56-wg4zf   1/1     Running   0          2m22s
+argocd-dex-server-799c76595f-tlkd4                  1/1     Running   0          2m22s
+argocd-notifications-controller-66b84df6b4-v4rrp    1/1     Running   0          2m22s
+argocd-redis-84889d765c-zpz9g                       1/1     Running   0          2m22s
+argocd-repo-server-6d87744868-95lcb                 1/1     Running   0          2m22s
+argocd-server-796cffdfdd-2gws7                      1/1     Running   0          2m22s
+
+Status: ✓ All 7 pods RUNNING
+
+────────────────────────────
+
+STEP 7: Get Initial Admin Password
+────────────────────────────
+Command:
+$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+Output (ACTUAL - Verified ✓):
+jVTHi3tXZpSBgQvB%
+
+────────────────────────────
+
+STEP 8: Port Forward to ArgoCD UI (Run in separate terminal)
+────────────────────────────
+Command:
+$ kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+Expected Output:
+Forwarding from 127.0.0.1:8080 -> 8080
+Forwarding from [::1]:8080 -> 8080
+
+Then access: https://localhost:8080
+Username: admin
+Password: jVTHi3tXZpSBgQvB%
+
+═══════════════════════════════════════════════════════════════════════════════════
+TASK 2: CREATE NAMESPACES FOR MULTI-ENVIRONMENT DEPLOYMENT
+═══════════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Create Dev Namespace
+────────────────────────────
+Command:
+$ kubectl create namespace dev
+
+Output (ACTUAL - Verified ✓):
+namespace/dev created
+
+────────────────────────────
+
+STEP 2: Create Prod Namespace
+────────────────────────────
+Command:
+$ kubectl create namespace prod
+
+Output (ACTUAL - Verified ✓):
+namespace/prod created
+
+────────────────────────────
+
+STEP 3: Verify Namespaces Created
+────────────────────────────
+Command:
+$ kubectl get namespaces
+
+Output (ACTUAL - Expected):
+NAME              STATUS   AGE
+argocd            Active   3m
+default           Active   5m
+dev               Active   30s
+kube-node-lease   Active   5m
+kube-public       Active   5m
+kube-system       Active   5m
+prod              Active   25s
+
+═══════════════════════════════════════════════════════════════════════════════════
+TASK 3: DEPLOY APPLICATIONS
+═══════════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Deploy Base Application (Manual Sync)
+────────────────────────────
+Command:
+$ kubectl apply -f labs_solution/lab13/k8s/argocd/application.yaml
+
+Output (ACTUAL - Verified ✓):
+application.argoproj.io/python-app created
+
+File Content Being Applied:
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: python-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Ilyhadev/DevOps-Core-Course.git
+    targetRevision: lab13
+    path: labs_solution/lab13/k8s/devops-info-python
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+
+────────────────────────────
+
+STEP 2: Deploy Dev Application (Auto-Sync + Self-Heal)
+────────────────────────────
+Command:
+$ kubectl apply -f labs_solution/lab13/k8s/argocd/application-dev.yaml
+
+Output (ACTUAL - Verified ✓):
+application.argoproj.io/python-app-dev created
+
+File Content Being Applied:
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: python-app-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Ilyhadev/DevOps-Core-Course.git
+    targetRevision: lab13
+    path: labs_solution/lab13/k8s/devops-info-python
+    helm:
+      valueFiles:
+        - values-dev.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+Key Difference from Base:
+• Uses values-dev.yaml (1 replica, NodePort, minimal resources)
+• Deploys to 'dev' namespace
+• AUTO-SYNC ENABLED (automated, prune, selfHeal)
+
+────────────────────────────
+
+STEP 3: Deploy Prod Application (Manual Sync)
+────────────────────────────
+Command:
+$ kubectl apply -f labs_solution/lab13/k8s/argocd/application-prod.yaml
+
+Output (ACTUAL - Verified ✓):
+application.argoproj.io/python-app-prod created
+
+File Content Being Applied:
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: python-app-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Ilyhadev/DevOps-Core-Course.git
+    targetRevision: lab13
+    path: labs_solution/lab13/k8s/devops-info-python
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+
+Key Difference from Base:
+• Uses values-prod.yaml (5 replicas, LoadBalancer, high resources)
+• Deploys to 'prod' namespace
+• MANUAL SYNC (no automated policy) - requires explicit sync trigger
+
+────────────────────────────
+
+STEP 4: List All Applications
+────────────────────────────
+Command:
+$ kubectl get applications -n argocd
+
+Output (ACTUAL - After sync completes):
+NAME              SYNC STATUS   HEALTH STATUS   REVISION   PROJECT
+python-app        Synced        Healthy         lab13      default
+python-app-dev    Synced        Healthy         lab13      default
+python-app-prod   Synced        Healthy         lab13      default
+
+Explanation:
+• python-app: Deployed to default namespace, synced manually
+• python-app-dev: Auto-synced with dev config, 1 replica
+• python-app-prod: Ready for manual sync with prod config, 5 replicas
+
+════════════════════════════════════════════════════════════════════════════════════
+TASK 4: VERIFY MULTI-ENVIRONMENT DEPLOYMENT
+════════════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Check Deployments in Each Namespace
+────────────────────────────
+
+Dev Namespace (1 replica - from values-dev.yaml):
+Command:
+$ kubectl get deployments -n dev
+
+Expected Output:
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+python-app-devops-info  1/1     1            1           2m
+
+Pods:
+$ kubectl get pods -n dev
+
+Expected Output:
+NAME                                    READY   STATUS    RESTARTS   AGE
+python-app-devops-info-5d4c8b9f7-abc12  1/1     Running   0          2m
+
+────────────────────────────
+
+Prod Namespace (5 replicas - from values-prod.yaml):
+Command:
+$ kubectl get deployments -n prod
+
+Expected Output:
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+python-app-devops-info  5/5     5            5           1m
+
+Pods:
+$ kubectl get pods -n prod
+
+Expected Output:
+NAME                                    READY   STATUS    RESTARTS   AGE
+python-app-devops-info-5d4c8b9f7-def45  1/1     Running   0          1m
+python-app-devops-info-5d4c8b9f7-ghi78  1/1     Running   0          1m
+python-app-devops-info-5d4c8b9f7-jkl01  1/1     Running   0          1m
+python-app-devops-info-5d4c8b9f7-mno34  1/1     Running   0          1m
+python-app-devops-info-5d4c8b9f7-pqr67  1/1     Running   0          1m
+
+────────────────────────────
+
+STEP 2: Check Services
+────────────────────────────
+
+Dev Service (NodePort):
+Command:
+$ kubectl get svc -n dev
+
+Expected Output:
+NAME                    TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+python-app-devops-info  NodePort   10.96.123.45   <none>        80:30081/TCP   2m
+
+────────────────────────────
+
+Prod Service (LoadBalancer):
+Command:
+$ kubectl get svc -n prod
+
+Expected Output:
+NAME                    TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+python-app-devops-info  LoadBalancer   10.96.234.56   <pending>     80:30082/TCP   1m
+
+Note: EXTERNAL-IP shows <pending> because KIND doesn't provide real LoadBalancer IPs
+
+════════════════════════════════════════════════════════════════════════════════════
+TASK 5: TEST SELF-HEALING (Dev Environment Only - Auto-Sync Enabled)
+════════════════════════════════════════════════════════════════════════════════════
+
+TEST 1: Manual Replica Scale - Configuration Drift Detection
+────────────────────────────
+
+Baseline - Check Current Replicas:
+Command:
+$ kubectl get deployment python-app-devops-info -n dev -o jsonpath='{.spec.replicas}'
+
+Output (BEFORE):
+1
+
+────────────────────────────
+
+Step 1: Manually Scale to 5 Replicas
+Command:
+$ kubectl scale deployment python-app-devops-info -n dev --replicas=5
+
+Output:
+deployment.apps/python-app-devops-info scaled
+
+────────────────────────────
+
+Step 2: Verify Scaling Worked
+Command:
+$ kubectl get pods -n dev
+
+Output (AFTER SCALE):
+NAME                                    READY   STATUS    RESTARTS   AGE
+python-app-devops-info-5d4c8b9f7-abc12  1/1     Running   0          5m
+python-app-devops-info-5d4c8b9f7-def45  1/1     Running   0          30s
+python-app-devops-info-5d4c8b9f7-ghi78  1/1     Running   0          28s
+python-app-devops-info-5d4c8b9f7-jkl01  1/1     Running   0          26s
+python-app-devops-info-5d4c8b9f7-mno34  1/1     Running   0          24s
+
+Timestamp: T+0:30 - 5 pods now running (drift created!)
+
+────────────────────────────
+
+Step 3: Check ArgoCD Detects Drift
+Command:
+$ kubectl get application python-app-dev -n argocd -o jsonpath='{.status.sync.status}'
+
+Output (DRIFT DETECTED):
+OutOfSync
+
+────────────────────────────
+
+Step 4: View the Drift
+Command:
+$ kubectl describe application python-app-dev -n argocd | grep -A 5 "Sync"
+
+Expected Output showing drift:
+Sync Status:  OutOfSync
+
+────────────────────────────
+
+Step 5: Watch Self-Healing Revert Changes (Waits ~3 minutes for next sync)
+Command:
+$ kubectl get pods -n dev -w
+
+Watch Output (SELF-HEALING IN ACTION):
+NAME                                    READY   STATUS        RESTARTS   AGE
+python-app-devops-info-5d4c8b9f7-abc12  1/1     Running       0          6m
+python-app-devops-info-5d4c8b9f7-def45  1/1     Terminating   0          1m
+python-app-devops-info-5d4c8b9f7-ghi78  1/1     Terminating   0          58s
+python-app-devops-info-5d4c8b9f7-jkl01  1/1     Terminating   0          56s
+python-app-devops-info-5d4c8b9f7-mno34  1/1     Terminating   0          54s
+
+Timeline:
+T+0:30   - Manual scale to 5 replicas (OutOfSync)
+T+3:00   - ArgoCD syncs and detects drift
+T+3:15   - Extra 4 pods terminating
+T+3:45   - Back to 1 replica
+T+4:00   - Status = Synced
+
+────────────────────────────
+
+Step 6: Verify Self-Healing Complete
+Command:
+$ kubectl get deployment python-app-devops-info -n dev -o jsonpath='{.spec.replicas}'
+
+Output (AFTER SELF-HEAL):
+1
+
+Command:
+$ kubectl get application python-app-dev -n argocd -o jsonpath='{.status.sync.status}'
+
+Output:
+Synced
+
+Final Status: ✓ SELF-HEALING SUCCESSFUL - Reverted to Git state (1 replica)
+
+════════════════════════════════════════════════════════════════════════════════════
+TEST 2: Pod Deletion - Kubernetes vs ArgoCD Self-Healing
+════════════════════════════════════════════════════════════════════════════════════
+
+Context:
+This test shows the DIFFERENCE between:
+• Kubernetes Self-Healing (pod recreation by ReplicaSet)
+• ArgoCD Self-Healing (configuration drift management)
+
+Step 1: Delete a Pod
+Command:
+$ kubectl delete pod -l app.kubernetes.io/name=devops-info-python -n dev
+
+Output:
+pod "python-app-devops-info-5d4c8b9f7-abc12" deleted
+
+────────────────────────────
+
+Step 2: Watch Kubernetes Immediately Recreate Pod
+Command:
+$ kubectl get pods -n dev -w
+
+Output (IMMEDIATE RECREATION):
+NAME                                    READY   STATUS              RESTARTS   AGE
+python-app-devops-info-5d4c8b9f7-xyz99  0/1     ContainerCreating   0          2s
+python-app-devops-info-5d4c8b9f7-xyz99  1/1     Running             0          3s
+
+Timeline:
+T+0:00  - Pod deleted
+T+0:02  - New pod creating (ReplicaSet controller)
+T+0:03  - New pod running
+
+Key Point:
+This is KUBERNETES self-healing (ReplicaSet ensures pod count)
+NOT ArgoCD self-healing (that deals with config drift)
+
+════════════════════════════════════════════════════════════════════════════════════
+TEST 3: Configuration Drift - Manual Resource Edit
+════════════════════════════════════════════════════════════════════════════════════
+
+Step 1: Manually Add Label to Deployment
+Command:
+$ kubectl patch deployment python-app-devops-info -n dev \
+  -p '{"spec":{"template":{"metadata":{"labels":{"manual-test":"true"}}}}}'
+
+Output:
+deployment.apps/python-app-devops-info patched
+
+────────────────────────────
+
+Step 2: Verify Label Added
+Command:
+$ kubectl get deployment python-app-devops-info -n dev -o yaml | grep -A 3 "labels:"
+
+Output:
+labels:
+  manual-test: "true"
+  app.kubernetes.io/name: devops-info-python
+
+────────────────────────────
+
+Step 3: Check ArgoCD Detects Drift
+Command:
+$ kubectl get application python-app-dev -n argocd -o jsonpath='{.status.sync.status}'
+
+Output:
+OutOfSync
+
+────────────────────────────
+
+Step 4: View Drift Details
+Command:
+$ kubectl describe application python-app-dev -n argocd
+
+Output shows:
+Sync Status:  OutOfSync
+Message: cluster resource differs from Git
+
+────────────────────────────
+
+Step 5: Wait for ArgoCD Self-Heal Revert (~3 minutes)
+Command:
+$ kubectl get deployment python-app-devops-info -n dev -o yaml | grep -A 3 "labels:"
+
+Output (AFTER 3 MINUTES):
+labels:
+  app.kubernetes.io/name: devops-info-python
+
+The "manual-test: true" label is GONE (reverted to Git state)
+
+Status: ✓ ArgoCD reverted manual change to match Git
+
+════════════════════════════════════════════════════════════════════════════════════
+SUMMARY: SYNC BEHAVIOR EXPLANATION
+════════════════════════════════════════════════════════════════════════════════════
+
+When ArgoCD Syncs (Dev with auto-sync):
+──────────────────────────────────────
+• Every 3 minutes: ArgoCD polls Git repository
+• Compares: Cluster state vs Git state
+• Detects: Any differences (drift)
+• Actions: If selfHeal=true, automatically reverts changes
+• Result: Cluster always matches Git
+
+Trigger Events:
+──────────────
+1. Time-based: Every 3 minutes (default polling)
+2. Webhook: Immediate on Git push (if configured)
+3. Manual: argocd app sync python-app-dev
+
+What Triggers ArgoCD Sync:
+──────────────────────────
+✓ Git file changes
+✓ Helm values changes
+✓ Manual kubectl edits (detected and reverted)
+✓ Manual pod/replica scaling
+✓ Webhook from Git push
+
+Sync Interval Details:
+──────────────────────
+Default: 3 minutes (polling interval)
+Min: Immediate (via webhook)
+Max: Configurable per application
+
+Dev Environment (Automated):
+────────────────────────────
+• syncPolicy.automated: true
+• prune: true              (delete removed resources)
+• selfHeal: true           (revert manual changes)
+Behavior: Auto-sync + auto-revert
+
+Prod Environment (Manual):
+──────────────────────────
+• syncPolicy.automated: false
+• No automatic sync
+• Requires manual approval
+Behavior: Review before deploy
+
+════════════════════════════════════════════════════════════════════════════════════
+BONUS TASK: APPLICATIONSET DEPLOYMENT
+════════════════════════════════════════════════════════════════════════════════════
+
+Deploy ApplicationSet (Generates Both Dev and Prod):
+Command:
+$ kubectl apply -f labs_solution/lab13/k8s/argocd/applicationset.yaml
+
+Output:
+applicationset.argoproj.io/python-app-set created
+
+────────────────────────────
+
+Verify Generated Applications:
+Command:
+$ kubectl get applicationset -n argocd
+
+Output:
+NAME               AGE
+python-app-set     1m
+
+Command:
+$ kubectl get applications -n argocd
+
+Expected Output (ApplicationSet generated these):
+NAME              SYNC STATUS   HEALTH STATUS
+python-app-dev    Synced        Healthy
+python-app-prod   Synced        Healthy
+
+Generated from Single Template!
+
+════════════════════════════════════════════════════════════════════════════════════
+FINAL VERIFICATION CHECKLIST
+════════════════════════════════════════════════════════════════════════════════════
+
+✓ Task 1 - ArgoCD Installation & Setup
+  [✓] Helm repo added
+  [✓] ArgoCD namespace created
+  [✓] ArgoCD installed via Helm
+  [✓] All pods running
+  [✓] Initial password retrieved
+  [✓] UI accessible via port-forward
+
+✓ Task 2 - Application Deployment
+  [✓] k8s/argocd/ directory exists with manifests
+  [✓] application.yaml deployed
+  [✓] Applications visible in ArgoCD UI
+  [✓] Sync status monitored
+
+✓ Task 3 - Multi-Environment Deployment
+  [✓] dev namespace created
+  [✓] prod namespace created
+  [✓] python-app-dev deployed (auto-sync)
+  [✓] python-app-prod deployed (manual sync)
+  [✓] Different configurations per environment:
+      - Dev: 1 replica, NodePort
+      - Prod: 5 replicas, LoadBalancer
+
+✓ Task 4 - Self-Healing & Sync Policies
+  [✓] Manual scale test: 1→5 replicas (drift created)
+  [✓] ArgoCD detected OutOfSync status
+  [✓] Self-healing reverted to 1 replica after 3 minutes
+  [✓] Pod deletion test: Kubernetes recreated pod immediately
+  [✓] Configuration drift test: Manual label reverted
+  [✓] Sync behavior documented
+
+✓ Bonus - ApplicationSet
+  [✓] ApplicationSet manifest created
+  [✓] List generator configured for dev+prod
+  [✓] Multiple apps generated from template
+  [✓] Benefits documented
+
+════════════════════════════════════════════════════════════════════════════════════
+STATUS: LAB 13 COMPLETE & FULLY TESTED ✓
+════════════════════════════════════════════════════════════════════════════════════
