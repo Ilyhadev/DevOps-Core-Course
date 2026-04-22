@@ -1,0 +1,49 @@
+# Vault password file
+.vault_pass
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Ansible
+*.retry
+.ansible_cache/
+roles/*/files/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# OS
+.DS_Store
+.swp
+.swo
+*~
+.vscode/
+
+# Logs
+*.log
+/tmp/
+
+# Generated files
+.vagrant/
+.terraform/
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+Thumbs.db
+Desktop.ini

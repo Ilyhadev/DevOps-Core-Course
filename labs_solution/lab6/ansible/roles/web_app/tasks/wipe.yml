@@ -1,0 +1,46 @@
+---
+# Task 3: Wipe Logic Implementation
+# This file handles safe removal of deployed applications
+# Key Safety Features:
+# 1. Controlled by variable: web_app_wipe (must be true)
+# 2. Gated by specific tag: web_app_wipe (must be specified)
+# This double-gating ensures wipe doesn't run accidentally
+
+- name: Wipe web application
+  when: web_app_wipe | bool
+  tags:
+    - web_app_wipe
+  block:
+    - name: Check if compose file exists
+      ansible.builtin.stat:
+        path: "{{ web_app_compose_project_dir }}/docker-compose.yml"
+      register: web_app_compose_file_stat
+
+    - name: Stop and remove containers with Docker Compose
+      ansible.builtin.shell: |
+        cd {{ web_app_compose_project_dir }}
+        docker compose down
+      when: web_app_compose_file_stat.stat.exists
+      failed_when: false
+      changed_when: "'Removing' in ansible_docker_compose_down.stderr or 'Removing' in ansible_docker_compose_down.stdout"
+
+    - name: Remove docker-compose.yml file
+      ansible.builtin.file:
+        path: "{{ web_app_compose_project_dir }}/docker-compose.yml"
+        state: absent
+
+    - name: Remove application directory
+      ansible.builtin.file:
+        path: "{{ web_app_compose_project_dir }}"
+        state: absent
+
+    - name: Log wipe completion
+      ansible.builtin.debug:
+        msg: "Application {{ web_app_name }} wiped successfully at {{ ansible_date_time.iso8601 }}"
+
+    - name: Create wipe log file
+      ansible.builtin.copy:
+        content: "Application {{ web_app_name }} was wiped at {{ ansible_date_time.iso8601 }}\n"
+        dest: "/tmp/{{ web_app_name }}_wipe.log"
+        mode: '0644'
+      become: true

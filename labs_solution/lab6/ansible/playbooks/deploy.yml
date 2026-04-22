@@ -1,0 +1,13 @@
+---
+# Deploy playbook: Deploys the web application using Docker Compose
+# Requires: provision.yml to have run first
+# Optional: Use -e "web_app_wipe=true" to clean and redeploy
+
+- name: Deploy application
+  hosts: webservers
+  become: true
+  vars_files:
+    - ../group_vars/all.yml
+
+  roles:
+    - web_app

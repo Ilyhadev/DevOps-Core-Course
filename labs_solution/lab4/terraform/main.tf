@@ -8,11 +8,10 @@ terraform {
 }
 
 provider "yandex" {
-  # Authentication: configure with env vars or application default
-  # See README.md for instructions.
-  cloud_id  = var.cloud_id
-  folder_id = var.folder_id
-  zone      = var.zone
+  service_account_key_file = var.service_account_key_file
+  cloud_id                 = var.cloud_id
+  folder_id                = var.folder_id
+  zone                     = var.zone
 }
 
 resource "yandex_vpc_network" "lab_network" {
