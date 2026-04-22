@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  tag: "lab13"
+  tag: "latest"
 
 service:
   type: NodePort
   port: 80
   targetPort: 8080
-  nodePort: 30081
+  nodePort: 30082
 
 resources:
   requests:

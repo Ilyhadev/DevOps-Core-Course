@@ -10,6 +10,9 @@ spec:
     targetRevision: lab13
     path: labs_solution/lab13/k8s/devops-info-python
     helm:
+      parameters:
+        - name: service.nodePort
+          value: "30082"
       valueFiles:
         - values-dev.yaml
   destination:

@@ -4,8 +4,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: devops-info-python
-  tag: "lab13"
+  repository: iliadocker21/devops-info-python
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 containerPort: 8080
