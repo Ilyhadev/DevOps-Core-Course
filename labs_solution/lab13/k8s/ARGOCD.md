@@ -227,6 +227,8 @@ Events:
 
 After capturing this evidence, the temporary label was removed and the deployment was returned to a clean state.
 
+#### Bonus note: ApplicationSet manifest was prepared in applicationset.yaml
+
 ## Note
 
 The lab requirements for Task 1-4 are covered with command evidence above. The only non-`Healthy` application state is `python-app-prod = Progressing`, which is expected in kind because `LoadBalancer` services stay with `EXTERNAL-IP <pending>`.
