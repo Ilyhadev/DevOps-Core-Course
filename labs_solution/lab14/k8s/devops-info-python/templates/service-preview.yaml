@@ -1,0 +1,15 @@
+{{- if eq .Values.rollout.strategy "blueGreen" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "devops-info-python.fullname" . }}-preview
+  labels:
+    {{- include "devops-info-python.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+{{- end }}
