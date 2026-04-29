@@ -1,0 +1,18 @@
+# Python build/context artifacts
+venv
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+
+# repo / editor
+.git
+.vscode
+.idea
+
+# tests & docs screenshots not needed in image
+tests/
+docs/screenshots/

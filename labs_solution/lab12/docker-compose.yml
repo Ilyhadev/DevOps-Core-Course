@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app-python:
+    build:
+      context: ./app_python
+      dockerfile: Dockerfile
+    image: devops-info-python:lab12
+    container_name: app-python-lab12
+    ports:
+      - "8000:8080"
+    environment:
+      - DEBUG=false
+      - DATA_DIR=/app/data
+    volumes:
+      - ./data:/app/data
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+networks:
+  app-network:
+    driver: bridge
