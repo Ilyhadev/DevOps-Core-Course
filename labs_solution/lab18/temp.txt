@@ -1,0 +1,30 @@
+## Nix version
+nix (Determinate Nix 3.19.1) 2.34.6
+
+## Nix hello
+Hello, world!
+
+## Build reproducibility (default.nix)
+first_build=/nix/store/8lnmmzmjjijmhfn2vyv2yzvw7qrny06q-devops-info-service-1.0.0
+second_build=/nix/store/8lnmmzmjjijmhfn2vyv2yzvw7qrny06q-devops-info-service-1.0.0
+0 store paths deleted, 0.0 KiB freed (path was referenced by docker layer GC roots)
+after_delete_rebuild=/nix/store/8lnmmzmjjijmhfn2vyv2yzvw7qrny06q-devops-info-service-1.0.0
+e4b4bb73462588f325cf69e9db7bed4913072242036d12b69384f04ecdb007c7
+
+## Docker reproducibility (docker.nix)
+d50300f8698291dbb8cb87a84d4e836f752d23bf8051c8cac812ab1c6693c254  result
+d50300f8698291dbb8cb87a84d4e836f752d23bf8051c8cac812ab1c6693c254  result
+
+## Traditional Docker hash comparison
+35578050f78a9afff2947a8db28ef4baa91d614a6721d7908fe6fed5d18baf42  -
+a6e3e2ce6e36deeb0888cd220469649351d84622bc1c3c3b5953a09725e52f93  -
+## Runtime comparison
+NAMES            IMAGE                           STATUS         PORTS
+nix-container    devops-info-service-nix:1.0.0   Up 4 seconds   0.0.0.0:5001->8080/tcp, [::]:5001->8080/tcp
+lab2-container   lab2-app:test1                  Up 4 seconds   0.0.0.0:5000->8080/tcp, [::]:5000->8080/tcp
+
+## Health check traditional docker
+{"status":"healthy","timestamp":"2026-05-06T14:11:18.158670+00:00","uptime_seconds":2}
+
+## Health check nix docker
+{"status":"healthy","timestamp":"2026-05-06T14:11:18.179441+00:00","uptime_seconds":3}
