@@ -1,0 +1,10 @@
+apiVersion: v2
+name: devops-info-python
+description: Helm chart for the DevOps course Python info service
+type: application
+version: 0.1.0
+appVersion: "lab9"
+keywords:
+  - devops
+  - kubernetes
+  - flask

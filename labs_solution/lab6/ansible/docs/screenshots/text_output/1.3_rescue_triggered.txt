@@ -1,0 +1,35 @@
+Using /home/ilia/Desktop/vsCode/DevOps/DevOps-Core-Course/labs_solution/lab6/ansible.cfg as config file
+
+PLAY [Provision web servers] ***************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [lab6-vm]
+
+TASK [common : Update apt cache] ***********************************************
+ok: [lab6-vm] => {"cache_update_time": 1772546026, "cache_updated": false, "changed": false}
+
+TASK [common : Log cache update completion] ************************************
+ok: [lab6-vm] => {
+    "msg": "APT cache update completed"
+}
+
+TASK [common : Install system packages] ****************************************
+ok: [lab6-vm] => {"cache_update_time": 1772546026, "cache_updated": false, "changed": false}
+
+TASK [common : Log package installation completion] ****************************
+changed: [lab6-vm] => {"changed": true, "checksum": "3c28fa7c12739d346baf4408bae5c3d7693ee32a", "dest": "/tmp/common_packages_installed.log", "gid": 0, "group": "root", "md5sum": "69c91465e9fe8c0971992028141e6600", "mode": "0644", "owner": "root", "size": 49, "src": "/home/ubuntu/.ansible/tmp/ansible-tmp-1772546317.7126625-292110-127604993881638/source", "state": "file", "uid": 0}
+
+TASK [docker : Update apt cache] ***********************************************
+ok: [lab6-vm] => {"cache_update_time": 1772546026, "cache_updated": false, "changed": false}
+
+TASK [docker : Install Docker dependencies] ************************************
+ok: [lab6-vm] => {"cache_update_time": 1772546026, "cache_updated": false, "changed": false}
+
+TASK [docker : Log dependency installation] ************************************
+ok: [lab6-vm] => {
+    "msg": "Docker dependency installation completed"
+}
+
+PLAY RECAP *********************************************************************
+lab6-vm                    : ok=8    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

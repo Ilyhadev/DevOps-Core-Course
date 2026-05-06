@@ -1,0 +1,79 @@
+replicaCount: 3
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: devops-info-python
+  tag: "lab9"
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+env:
+  - name: PORT
+    value: "8080"
+  - name: DEBUG
+    value: "false"
+
+deployment:
+  revisionHistoryLimit: 10
+  strategy:
+    maxSurge: 1
+    maxUnavailable: 0
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8080
+  nodePort: 30081
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+secrets:
+  enabled: true
+  username: "admin"
+  password: "changeme123"
+  databaseUrl: "postgresql://localhost:5432/app"
+  apiKey: "api-key-placeholder"
+
+vault:
+  enabled: true
+  role: "devops-info-python"
+  secretPath: "secret/data/myapp/config"
+
+hooks:
+  enabled: true
+  image: ""
+  preInstall:
+    enabled: true
+    weight: -5
+    command: "echo Pre-install validation started && sleep 3 && echo Pre-install validation finished"
+  postInstall:
+    enabled: true
+    weight: 5
+    command: "echo Post-install smoke test started && sleep 3 && echo Post-install smoke test finished"
