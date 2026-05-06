@@ -1,0 +1,29 @@
+## Nix version
+nix (Determinate Nix 3.19.1) 2.34.6
+
+## Nix hello
+Hello, world!
+
+## Build reproducibility (default.nix)
+first_build=/nix/store/vlfxfp24rlc43fbswyahzrjf8g1xx0vz-devops-info-service-1.0.0
+second_build=/nix/store/vlfxfp24rlc43fbswyahzrjf8g1xx0vz-devops-info-service-1.0.0
+nix_hash=b1d8601b4e29509052717e480702c605ca5b9f7665e0e75cc991c5d79656a2e7
+
+## Docker reproducibility (docker.nix)
+145937585a576a5c888eb516bf6ee2c89ef13add925034f9cf6ed16536b23046
+145937585a576a5c888eb516bf6ee2c89ef13add925034f9cf6ed16536b23046
+
+## Flakes bonus evidence
+flake_lock_present=yes
+commands:
+- nix build
+- nix build .#dockerImage
+status=passed
+
+## Traditional Docker hash comparison
+fb14ed5d3f6420ec8171a5ad67a89098e75b8011ccd117ce362da80bb52c39fd
+7e842e08156b2e474da25a5c913f767cbe054bbf96a6f550b4af65993b09a2d8
+
+## Runtime comparison
+traditional_health={"status":"healthy","timestamp":"2026-05-06T14:53:19.644439+00:00","uptime_seconds":1}
+nix_health={"status":"healthy","timestamp":"2026-05-06T14:53:19.665521+00:00","uptime_seconds":2}

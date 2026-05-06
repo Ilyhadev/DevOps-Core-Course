@@ -1,0 +1,151 @@
+## Lab 17 command outputs
+
+Paste here:
+- wrangler login / whoami output
+- wrangler deploy output (workers.dev URL)
+- curl outputs for /health /edge /counter /config
+- wrangler secret put confirmations
+- wrangler kv namespace create output
+- wrangler deployments list output
+- wrangler tail sample logs
+
+
+ ⛅️ wrangler 4.88.0
+───────────────────
+Getting User settings...
+👋 You are logged in with an OAuth Token, associated with the email [REDACTED_EMAIL].
+┌─────────────────────────────────┬──────────────────────────────────┐
+│ Account Name                    │ Account ID                       │
+├─────────────────────────────────┼──────────────────────────────────┤
+│ [REDACTED_ACCOUNT]              │ [REDACTED_ACCOUNT_ID]             │
+└─────────────────────────────────┴──────────────────────────────────┘
+🔓 Token Permissions:
+Scope (Access)
+- account (read)
+- user (read)
+- workers (write)
+- workers_kv (write)
+- workers_routes (write)
+- workers_scripts (write)
+- workers_tail (read)
+- d1 (write)
+- pages (write)
+- zone (read)
+- ssl_certs (write)
+- ai (write)
+- ai-search (write)
+- ai-search (run)
+- queues (write)
+- pipelines (write)
+- secrets_store (write)
+- artifacts (write)
+- flagship (write)
+- containers (write)
+- cloudchamber (write)
+- connectivity (admin)
+- email_routing (write)
+- email_sending (write)
+- browser (write)
+- offline_access 
+{"status":"ok","app":"lab17-edge-api","timestamp":"2026-05-06T12:55:16.253Z"}{"colo":"AMS","country":"NL","city":"Amsterdam","asn":12876,"httpProtocol":"HTTP/1.1","tlsVersion":"TLSv1.3","userAgent":"curl/8.5.0"}{"key":"visits","visits":1,"persisted":true}{"app":"lab17-edge-api","course":"devops-core-course","secretsPresent":{"apiToken":false,"adminEmail":false},"secretPreview":{"adminEmailDomain":null}}
+ ⛅️ wrangler 4.88.0
+───────────────────
+Total Upload: 2.21 KiB / gzip: 0.86 KiB
+Your Worker has access to the following bindings:
+Binding                                                 Resource                  
+env.SETTINGS (489251d1d3714fc58da940269c9c7ea3)         KV Namespace              
+env.APP_NAME ("lab17-edge-api")                         Environment Variable      
+env.COURSE_NAME ("devops-core-course")                  Environment Variable      
+
+Uploaded lab17-edge-api (11.43 sec)
+? Would you like to register a workers.dev subdomain now?
+🤖 Using fallback value in non-interactive context: no
+
+{"status":"ok","app":"lab17-edge-api","timestamp":"2026-05-06T13:10:29.597Z"}{"colo":"AMS","country":"NL","city":"Amsterdam","asn":12876,"httpProtocol":"HTTP/2","tlsVersion":"TLSv1.3","userAgent":"curl/8.5.0"}{"key":"visits","visits":1,"persisted":true}{"key":"visits","visits":2,"persisted":true}{"app":"lab17-edge-api","course":"devops-core-course","secretsPresent":{"apiToken":true,"adminEmail":true},"secretPreview":{"adminEmailDomain":null}}
+ ⛅️ wrangler 4.88.0
+───────────────────
+Total Upload: 2.21 KiB / gzip: 0.86 KiB
+Your Worker has access to the following bindings:
+Binding                                                 Resource                  
+env.SETTINGS (489251d1d3714fc58da940269c9c7ea3)         KV Namespace              
+env.APP_NAME ("lab17-edge-api")                         Environment Variable      
+env.COURSE_NAME ("devops-core-course")                  Environment Variable      
+
+Uploaded lab17-edge-api (12.25 sec)
+Deployed lab17-edge-api triggers (6.14 sec)
+  https://lab17-edge-api.ilyhalab.workers.dev
+Current Version ID: d9ca0c33-7627-4a99-bae4-ec591b688a6b
+{"app":"lab17-edge-api","course":"devops-core-course","secretsPresent":{"apiToken":true,"adminEmail":true},"secretPreview":{"adminEmailDomain":null}}
+ ⛅️ wrangler 4.88.0
+───────────────────
+Created:     2026-05-06T12:53:45.517Z
+Author:      [REDACTED_EMAIL]
+Source:      Upload
+Message:     Automatic deployment on upload.
+Version(s):  (100%) c1a2d486-3206-4502-8c1e-f6c1a8c7b4b2
+                 Created:  2026-05-06T12:53:45.517Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-05-06T12:53:48.773Z
+Author:      [REDACTED_EMAIL]
+Source:      Secret Change
+Message:     -
+Version(s):  (100%) a9c4f273-2287-478b-8465-bb529832a0eb
+                 Created:  2026-05-06T12:53:48.773Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-05-06T12:54:16.555Z
+Author:      [REDACTED_EMAIL]
+Source:      Secret Change
+Message:     -
+Version(s):  (100%) 4846dc26-a4ae-4c68-8fee-b4b33e4ea7c5
+                 Created:  2026-05-06T12:54:16.555Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-05-06T12:55:42.491Z
+Author:      [REDACTED_EMAIL]
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) 2474b80f-9666-4c13-99b1-6e3fd0a335fc
+                 Created:  2026-05-06T12:55:39.874Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-05-06T13:06:32.657Z
+Author:      [REDACTED_EMAIL]
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) cb353e67-a7d9-47ce-8215-a7ac1423a70a
+                 Created:  2026-05-06T13:06:30.423Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-05-06T13:10:47.386Z
+Author:      [REDACTED_EMAIL]
+Source:      Secret Change
+Message:     -
+Version(s):  (100%) 1f47b82c-7463-40b5-8c2b-5f6825e1abf7
+                 Created:  2026-05-06T13:10:47.386Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-05-06T13:10:53.979Z
+Author:      [REDACTED_EMAIL]
+Source:      Secret Change
+Message:     -
+Version(s):  (100%) ed995af8-4b21-4322-9e21-6f84e693d0c6
+                 Created:  2026-05-06T13:10:53.979Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-05-06T13:11:07.971Z
+Author:      [REDACTED_EMAIL]
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) d9ca0c33-7627-4a99-bae4-ec591b688a6b
+                 Created:  2026-05-06T13:11:04.546Z
+                     Tag:  -
+                 Message:  -
