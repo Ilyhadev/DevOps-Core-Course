@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "devops-info-python.fullname" . }}
+  labels:
+    {{- include "devops-info-python.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if ne .Values.rollout.strategy "blueGreen" }}
+  selector:
+    {{- include "devops-info-python.selectorLabels" . | nindent 4 }}
+  {{- end }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}

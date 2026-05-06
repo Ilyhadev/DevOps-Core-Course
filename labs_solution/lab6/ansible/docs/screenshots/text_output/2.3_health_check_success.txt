@@ -1,0 +1,23 @@
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:8000...
+* Connected to localhost (::1) port 8000
+> GET /health HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/8.5.0
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Server: gunicorn
+< Date: Tue, 03 Mar 2026 14:45:30 GMT
+< Connection: keep-alive
+< Content-Type: application/json
+< Content-Length: 89
+< 
+{ [89 bytes data]
+100    89  100    89    0     0  28867      0 --:--:-- --:--:-- --:--:-- 44500
+* Connection #0 to host localhost left intact
+{"status":"healthy","timestamp":"2026-03-03T14:45:30.227752+00:00","uptime_seconds":142}

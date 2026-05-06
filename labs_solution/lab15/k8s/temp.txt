@@ -1,0 +1,111 @@
+## Resource verification
+NAME                                 READY   STATUS    RESTARTS   AGE   IP            NODE                         NOMINATED NODE   READINESS GATES
+pod/lab15-app-devops-info-python-0   1/1     Running   0          83s   10.244.0.12   devops-lab14-control-plane   <none>           <none>
+pod/lab15-app-devops-info-python-1   1/1     Running   0          68s   10.244.0.14   devops-lab14-control-plane   <none>           <none>
+pod/lab15-app-devops-info-python-2   1/1     Running   0          53s   10.244.0.16   devops-lab14-control-plane   <none>           <none>
+
+NAME                                            READY   AGE   CONTAINERS           IMAGES
+statefulset.apps/lab15-app-devops-info-python   3/3     83s   devops-info-python   devops-info-python:lab12-local
+
+NAME                                            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/lab15-app-devops-info-python            NodePort    10.96.169.216   <none>        80:30091/TCP   63s   app.kubernetes.io/instance=lab15-app,app.kubernetes.io/name=devops-info-python
+service/lab15-app-devops-info-python-headless   ClusterIP   None            <none>        80/TCP         83s   app.kubernetes.io/instance=lab15-app,app.kubernetes.io/name=devops-info-python
+
+NAME                                                        STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/data-lab15-app-devops-info-python-0   Bound    pvc-56cb8cd9-aa5a-4425-a314-d8ab7acc274a   100Mi      RWO            standard       <unset>                 83s   Filesystem
+persistentvolumeclaim/data-lab15-app-devops-info-python-1   Bound    pvc-288d5a58-ae03-4a4f-abf7-417a46ccf2b4   100Mi      RWO            standard       <unset>                 68s   Filesystem
+persistentvolumeclaim/data-lab15-app-devops-info-python-2   Bound    pvc-a53297fa-d762-4bb6-ac7e-149a3068593e   100Mi      RWO            standard       <unset>                 53s   Filesystem
+
+## DNS identity test from pod-0
+pod-1=> 10.244.0.14
+pod-2=> 10.244.0.16
+
+## Per-pod storage isolation
+{"visits":2}
+{"visits":1}
+{"visits":0}
+
+## Persistence test pod-0 before delete
+2pod "lab15-app-devops-info-python-0" deleted from lab15 namespace
+pod/lab15-app-devops-info-python-0 condition met
+## Persistence test pod-0 after restart
+2
+## Bonus: partitioned rolling update (partition=2)
+Release "lab15-app" has been upgraded. Happy Helming!
+NAME: lab15-app
+LAST DEPLOYED: Wed May  6 14:59:23 2026
+NAMESPACE: lab15
+STATUS: deployed
+REVISION: 3
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+1. Release lab15-app was installed in namespace lab15.
+
+2. Check workload status:
+   kubectl get deploy,po,svc -l app.kubernetes.io/instance=lab15-app
+3. Access application with NodePort:
+   kubectl get svc lab15-app-devops-info-python -o wide
+   kubectl port-forward svc/lab15-app-devops-info-python 18080:80
+   curl http://127.0.0.1:18080/health
+Waiting for partitioned roll out to finish: 0 out of 1 new pods have been updated...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
+
+## Bonus: partitioned rolling update (partition=2)
+Release "lab15-app" has been upgraded. Happy Helming!
+NAME: lab15-app
+LAST DEPLOYED: Wed May  6 14:59:49 2026
+NAMESPACE: lab15
+STATUS: deployed
+REVISION: 4
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+1. Release lab15-app was installed in namespace lab15.
+
+2. Check workload status:
+   kubectl get deploy,po,svc -l app.kubernetes.io/instance=lab15-app
+3. Access application with NodePort:
+   kubectl get svc lab15-app-devops-info-python -o wide
+   kubectl port-forward svc/lab15-app-devops-info-python 18080:80
+   curl http://127.0.0.1:18080/health
+partitioned roll out complete: 1 new pods have been updated...
+NAME                             REV                                       READY
+lab15-app-devops-info-python-0   lab15-app-devops-info-python-7f8956b44c   true
+lab15-app-devops-info-python-1   lab15-app-devops-info-python-7f8956b44c   true
+lab15-app-devops-info-python-2   lab15-app-devops-info-python-64b5869f64   true
+
+## Bonus: OnDelete strategy
+Release "lab15-app" has been upgraded. Happy Helming!
+NAME: lab15-app
+LAST DEPLOYED: Wed May  6 14:59:50 2026
+NAMESPACE: lab15
+STATUS: deployed
+REVISION: 5
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+1. Release lab15-app was installed in namespace lab15.
+
+2. Check workload status:
+   kubectl get deploy,po,svc -l app.kubernetes.io/instance=lab15-app
+3. Access application with NodePort:
+   kubectl get svc lab15-app-devops-info-python -o wide
+   kubectl port-forward svc/lab15-app-devops-info-python 18080:80
+   curl http://127.0.0.1:18080/health
+updateStrategy=OnDelete
+NAME                             REV
+lab15-app-devops-info-python-0   lab15-app-devops-info-python-7f8956b44c
+lab15-app-devops-info-python-1   lab15-app-devops-info-python-7f8956b44c
+lab15-app-devops-info-python-2   lab15-app-devops-info-python-64b5869f64
+Deleting pod-2 to apply OnDelete update
+pod "lab15-app-devops-info-python-2" deleted from lab15 namespace
+pod/lab15-app-devops-info-python-2 condition met
+NAME                             REV
+lab15-app-devops-info-python-0   lab15-app-devops-info-python-7f8956b44c
+lab15-app-devops-info-python-1   lab15-app-devops-info-python-7f8956b44c
+lab15-app-devops-info-python-2   lab15-app-devops-info-python-7f8956b44c
