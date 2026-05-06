@@ -44,7 +44,7 @@ UI access and initial password retrieval:
 
 ```bash
 $ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-jVTHi3tXZpSBgQvB%
+[REDACTED]
 
 $ kubectl port-forward svc/argocd-server -n argocd 8080:443
 Forwarding from 127.0.0.1:8080 -> 8080

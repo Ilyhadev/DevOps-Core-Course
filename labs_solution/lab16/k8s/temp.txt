@@ -24,7 +24,7 @@ monitoring-kube-state-metrics-8c945547d-9wk44          1/1     Running   0      
 monitoring-prometheus-node-exporter-pxjp8              1/1     Running   0          114s
 
 ## Grafana admin password
-Ytmk6A4Mp62JaMCr2Ifoka4VTo4cS1U4JCqxjbo6
+[REDACTED]
 ## Init containers verification
 NAME                             READY   STATUS    RESTARTS   AGE    IP            NODE                         NOMINATED NODE   READINESS GATES
 lab16-app-devops-info-python-0   1/1     Running   0          102s   10.244.0.29   devops-lab14-control-plane   <none>           <none>
