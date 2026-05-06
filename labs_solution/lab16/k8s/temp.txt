@@ -1,0 +1,53 @@
+## Monitoring install evidence
+NAME                                                         READY   STATUS    RESTARTS   AGE
+pod/alertmanager-monitoring-kube-prometheus-alertmanager-0   2/2     Running   0          95s
+pod/monitoring-grafana-6c8c7c6f6b-x7zwf                      3/3     Running   0          114s
+pod/monitoring-kube-prometheus-operator-596789dcfc-8sqbm     1/1     Running   0          114s
+pod/monitoring-kube-state-metrics-8c945547d-9wk44            1/1     Running   0          114s
+pod/monitoring-prometheus-node-exporter-pxjp8                1/1     Running   0          114s
+pod/prometheus-monitoring-kube-prometheus-prometheus-0       2/2     Running   0          95s
+
+NAME                                              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+service/alertmanager-operated                     ClusterIP   None            <none>        9093/TCP,9094/TCP,9094/UDP   95s
+service/monitoring-grafana                        ClusterIP   10.96.154.252   <none>        80/TCP                       114s
+service/monitoring-kube-prometheus-alertmanager   ClusterIP   10.96.126.160   <none>        9093/TCP,8080/TCP            114s
+service/monitoring-kube-prometheus-operator       ClusterIP   10.96.205.73    <none>        443/TCP                      114s
+service/monitoring-kube-prometheus-prometheus     ClusterIP   10.96.92.91     <none>        9090/TCP,8080/TCP            114s
+service/monitoring-kube-state-metrics             ClusterIP   10.96.202.240   <none>        8080/TCP                     114s
+service/monitoring-prometheus-node-exporter       ClusterIP   10.96.177.163   <none>        9100/TCP                     114s
+service/prometheus-operated                       ClusterIP   None            <none>        9090/TCP                     95s
+
+## Monitoring stack pods only
+NAME                                                   READY   STATUS    RESTARTS   AGE
+monitoring-kube-prometheus-operator-596789dcfc-8sqbm   1/1     Running   0          114s
+monitoring-kube-state-metrics-8c945547d-9wk44          1/1     Running   0          114s
+monitoring-prometheus-node-exporter-pxjp8              1/1     Running   0          114s
+
+## Grafana admin password
+Ytmk6A4Mp62JaMCr2Ifoka4VTo4cS1U4JCqxjbo6
+## Init containers verification
+NAME                             READY   STATUS    RESTARTS   AGE    IP            NODE                         NOMINATED NODE   READINESS GATES
+lab16-app-devops-info-python-0   1/1     Running   0          102s   10.244.0.29   devops-lab14-control-plane   <none>           <none>
+lab16-app-devops-info-python-1   1/1     Running   0          61s    10.244.0.31   devops-lab14-control-plane   <none>           <none>
+lab16-app-devops-info-python-2   1/1     Running   0          37s    10.244.0.33   devops-lab14-control-plane   <none>           <none>
+
+## Init container logs (download)
+Connecting to example.com (172.66.147.243:443)
+wget: note: TLS certificate validation not implemented
+saving to '/work-dir/index.html'
+index.html           100% |********************************|   528  0:00:00 ETA
+'/work-dir/index.html' saved
+
+## Init container logs (wait-for-service)
+Server:		10.96.0.10
+Address:	10.96.0.10:53
+
+
+Name:	kubernetes.default.svc.cluster.local
+Address: 10.96.0.1
+
+
+## Main container can access downloaded file
+total 4
+-rw-r--r-- 1 root root 528 May  6 12:12 index.html
+528 /init-data/index.html
