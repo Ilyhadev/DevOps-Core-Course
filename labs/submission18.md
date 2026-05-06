@@ -56,10 +56,9 @@ nix-hash --type sha256 result
 ```
 
 Observed from `temp.txt`:
-- `first_build=/nix/store/8lnmmzmjjijmhfn2vyv2yzvw7qrny06q-devops-info-service-1.0.0`
-- `second_build=/nix/store/8lnmmzmjjijmhfn2vyv2yzvw7qrny06q-devops-info-service-1.0.0`
-- `after_delete_rebuild=/nix/store/8lnmmzmjjijmhfn2vyv2yzvw7qrny06q-devops-info-service-1.0.0`
-- `nix-hash`: `e4b4bb73462588f325cf69e9db7bed4913072242036d12b69384f04ecdb007c7`
+- `first_build=/nix/store/vlfxfp24rlc43fbswyahzrjf8g1xx0vz-devops-info-service-1.0.0`
+- `second_build=/nix/store/vlfxfp24rlc43fbswyahzrjf8g1xx0vz-devops-info-service-1.0.0`
+- `nix-hash`: `b1d8601b4e29509052717e480702c605ca5b9f7665e0e75cc991c5d79656a2e7`
 
 Note:
 - `nix-store --delete` may return `0 paths deleted` if that store path is still referenced by a GC root/layer.
@@ -97,7 +96,7 @@ docker load < result
 ```
 
 Observed tarball hash:
-- `d50300f8698291dbb8cb87a84d4e836f752d23bf8051c8cac812ab1c6693c254`
+- `145937585a576a5c888eb516bf6ee2c89ef13add925034f9cf6ed16536b23046`
 
 Run Nix-built image:
 
@@ -114,8 +113,8 @@ rm result && nix-build docker.nix && sha256sum result
 ```
 
 Observed:
-- `d50300f8698291dbb8cb87a84d4e836f752d23bf8051c8cac812ab1c6693c254`
-- `d50300f8698291dbb8cb87a84d4e836f752d23bf8051c8cac812ab1c6693c254`
+- `145937585a576a5c888eb516bf6ee2c89ef13add925034f9cf6ed16536b23046`
+- `145937585a576a5c888eb516bf6ee2c89ef13add925034f9cf6ed16536b23046`
 
 Conclusion: Nix `dockerTools` output is reproducible for same inputs.
 
@@ -130,8 +129,8 @@ docker save lab2-app:test2 | sha256sum
 ```
 
 Observed:
-- test1: `35578050f78a9afff2947a8db28ef4baa91d614a6721d7908fe6fed5d18baf42`
-- test2: `a6e3e2ce6e36deeb0888cd220469649351d84622bc1c3c3b5953a09725e52f93`
+- test1: `fb14ed5d3f6420ec8171a5ad67a89098e75b8011ccd117ce362da80bb52c39fd`
+- test2: `7e842e08156b2e474da25a5c913f767cbe054bbf96a6f550b4af65993b09a2d8`
 
 Conclusion: traditional Docker image archive hash drift appears even with same Dockerfile/context.
 
